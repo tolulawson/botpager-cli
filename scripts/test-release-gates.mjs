@@ -52,9 +52,12 @@ try {
   const server=createServer(async(req,res)=>{
    let raw='';for await(const c of req)raw+=c;const body=JSON.parse(raw||'{}');let status=200,data={};
    if(req.url==='/healthz')data={ok:true,revision:'fixture'};
-   else if(req.url==='/v1/pair/start')data={code:'ABCD-EFGH',sessionId:'fixture',qrPayload:'botpager://pair?code=ABCD-EFGH',expiresAt:new Date(Date.now()+60000).toISOString()};
+   else if(req.url==='/v1/pair/start')data={code:'ABCD-EFGH',sessionId:'fixture',sessionSecret:'fixture-secret',qrPayload:'botpager://pair?code=ABCD-EFGH',expiresAt:new Date(Date.now()+60000).toISOString()};
    else if(req.url==='/v1/pair/claim'){linked=true;data={token:'fixture-token',deviceId:'fixture-device',cliName:'Fixture'};}
    else if(req.url==='/v1/pair/session/fixture')data=linked?{status:'linked',deviceId:'fixture-device',deviceName:'Fixture',token:'fixture-token'}:{status:'pending'};
+   else if(req.url==='/v1/pair/session/fixture/ack')data={ok:true};
+   else if(req.url==='/v1/pair/session/fixture/events'){status=503;data={error:{code:'STREAM_DOWN'}};}
+   else if(req.url==='/v1/pair/session/fixture/wait')data={status:linked?'linked':'pending'};
    else if(revoked){status=401;data={error:{code:'UNAUTHORIZED',message:'Revoked'}};}
    else if(req.url==='/v1/send'){
     const old=messages.find(m=>m.id===body.messageId);

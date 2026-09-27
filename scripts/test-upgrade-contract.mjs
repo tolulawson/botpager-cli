@@ -6,7 +6,7 @@ import { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 const temp=mkdtempSync(join(tmpdir(),'botpager-upgrade-check-'));
-const server=createServer((req,res)=>{assert.equal(req.headers['x-botpager-protocol'],'2'); assert.equal(req.headers['x-botpager-version'],'0.2.0'); res.writeHead(426,{'content-type':'application/json'});res.end(JSON.stringify({error:{code:'UPGRADE_REQUIRED',message:'Upgrade required',protocolVersion:3,minimumClientVersions:{cli:'1.0.0'},upgradeCommand:'UNTRUSTED CODE'}}));});
+const server=createServer((req,res)=>{assert.equal(req.headers['x-botpager-protocol'],'2'); assert.equal(req.headers['x-botpager-version'],'0.3.0'); res.writeHead(426,{'content-type':'application/json'});res.end(JSON.stringify({error:{code:'UPGRADE_REQUIRED',message:'Upgrade required',protocolVersion:3,minimumClientVersions:{cli:'1.0.0'},upgradeCommand:'UNTRUSTED CODE'}}));});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 function run(args,env={}){return new Promise(resolve=>{const p=spawn(process.execPath,['dist/index.js',...args],{env:{...process.env,BOTPAGER_CONFIG:join(temp,'config.json'),...env}});let stdout='',stderr='';p.stdout.on('data',x=>stdout+=x);p.stderr.on('data',x=>stderr+=x);p.on('close',code=>resolve({code,stdout,stderr}));});}
 try {

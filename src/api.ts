@@ -28,11 +28,11 @@ async function parse<T>(res: Response): Promise<T> {
   return data;
 }
 
-export async function api<T>(
+export async function apiResponse(
   config: Config,
   path: string,
   init: RequestInit & { token?: string } = {},
-): Promise<T> {
+): Promise<Response> {
   const headers = new Headers(init.headers);
   headers.set("x-botpager-client", "cli");
   headers.set("x-botpager-version", pkg.version);
@@ -42,10 +42,16 @@ export async function api<T>(
   }
   if (init.token) headers.set("authorization", `Bearer ${init.token}`);
   const res = await fetch(`${apiUrl(config)}${path}`, { ...init, headers });
-  return parse<T>(res);
+  if (!res.ok) await parse(res);
+  return res;
+}
+
+export async function api<T>(config: Config, path: string, init: RequestInit & {token?:string} = {}): Promise<T> {
+  return parse<T>(await apiResponse(config,path,init));
 }
 
 export interface PairStart {
+  sessionSecret: string;
   sessionId: string;
   code: string;
   expiresAt: string;
