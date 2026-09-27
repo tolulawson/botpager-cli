@@ -124,3 +124,13 @@ See [RELEASE.md](RELEASE.md) for bootstrap publication and subsequent trusted re
 ## License
 
 [MIT](LICENSE).
+
+### Computer identity
+
+Pairing uses a persistent, randomly generated computer ID in `~/.botpager/computer-id`.
+It is shared across CLI profiles for your OS user and stays the same when you rename
+this computer. Keep this file when moving configuration. Deleting it creates a new
+installation identity. The mobile app supplies its own persistent phone ID; the API
+rejects a second pairing of the same computer and phone with `ALREADY_PAIRED`.
+Pairing with a different phone is allowed. Remove an existing pairing before pairing
+that phone again. This requires the matching updated BotPager backend and mobile app.
