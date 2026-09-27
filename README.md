@@ -134,3 +134,17 @@ installation identity. The mobile app supplies its own persistent phone ID; the 
 rejects a second pairing of the same computer and phone with `ALREADY_PAIRED`.
 Pairing with a different phone is allowed. Remove an existing pairing before pairing
 that phone again. This requires the matching updated BotPager backend and mobile app.
+
+## Coding-agent skill
+
+Install the BotPager skill in your project for Codex, Claude Code, or another supported agent:
+
+```sh
+npx skills add tolulawson/botpager-cli --skill botpager
+```
+
+Choose your agent when prompted. Add `--global` to install for all your projects.
+This skill installer requires Node.js/npm; the standalone BotPager CLI does not.
+The [skill](skills/botpager/SKILL.md) covers pairing, task notifications, destinations,
+piped input, and error handling. Ask your agent to notify you when a task completes
+or needs your attention. Installing the skill does not pair a phone or send a message.
