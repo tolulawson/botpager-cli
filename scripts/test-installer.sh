@@ -5,7 +5,7 @@ artifacts="$(cd "${1:?artifacts directory}" && pwd)"
 root="$(mktemp -d)"
 trap 'rm -rf "$root"' EXIT
 mkdir -p "$root/tools" "$root/downloads"
-for tool in bash uname mktemp mkdir rm cp mv chmod tar curl shasum sha256sum awk grep cut tr cat head; do
+for tool in bash uname mktemp mkdir rm cp mv chmod tar gzip curl shasum sha256sum awk grep cut tr cat head; do
   path="$(command -v "$tool" || true)"
   if [[ -n "$path" ]]; then ln -s "$path" "$root/tools/$tool"; fi
 done

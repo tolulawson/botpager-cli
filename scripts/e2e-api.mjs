@@ -74,7 +74,7 @@ try {
     assert.equal(r.status, 200); assert.equal(r.body.delivery, 'duplicate');
     const h = await request('/v1/messages'); assert.equal(h.body.messages.filter(m => m.id === ids[0]).length, 1);
   });
-  await check('delete history', async () => { const r = await request('/v1/messages', 'DELETE', { ids }); assert.equal(r.status, 200); });
+  await check('delete history', async () => { const r = await request('/v1/messages', 'DELETE', { ids }); assert.equal(r.status, 200); await until(async () => { const h = await request('/v1/messages'); return ids.every(id => h.body.deletedIds.includes(id)) && !h.body.messages.some(m => ids.includes(m.id)); }); });
   await check('unlink actual CLI and reject revoked credentials', async () => {
     assert.equal((await run(['unlink', deviceId]).done).code, 0);
     await until(async () => (await request('/v1/messages')).status === 401);
