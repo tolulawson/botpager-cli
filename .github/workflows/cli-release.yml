@@ -107,7 +107,7 @@ jobs:
           sha256sum ./*.tgz > SHA256SUMS
       - name: Production E2E with installed npm artifact and Linux binary
         run: |
-          npm install --prefix /tmp/botpager-e2e --ignore-scripts artifacts/*.tgz
+          npm install --prefix /tmp/botpager-e2e --ignore-scripts "$PWD"/artifacts/*.tgz
           node scripts/e2e-api.mjs /tmp/botpager-e2e/node_modules/.bin/botpager https://botpager-api.reostack.com artifacts/e2e-npm.json
           mkdir -p /tmp/botpager-native
           tar -xzf artifacts/botpager-*-linux-x64.tar.gz -C /tmp/botpager-native
