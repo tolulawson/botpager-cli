@@ -9,13 +9,13 @@ Send messages from a computer to your paired BotPager mobile app. Standalone ins
 macOS and Linux:
 
 ```sh
-curl -fsSL https://botpager-api.reostack.com/cli/install.sh | bash
+curl -fsSL https://botpager.reostack.com/cli/install.sh | bash
 ```
 
 Windows x64 (PowerShell):
 
 ```powershell
-irm https://botpager-api.reostack.com/cli/install.ps1 | iex
+irm https://botpager.reostack.com/cli/install.ps1 | iex
 ```
 
 Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. Alpine requires its standard `libstdc++` package; installers also require curl, tar/gzip and a SHA256 utility. OS/runtime minimums still apply; unsupported architectures are rejected.
@@ -84,13 +84,13 @@ To return to the default profile, unset both variables. The profiles retain inde
 macOS and Linux:
 
 ```sh
-curl -fsSL https://botpager-api.reostack.com/cli/install.sh | bash
+curl -fsSL https://botpager.reostack.com/cli/install.sh | bash
 ```
 
 Windows x64 (PowerShell):
 
 ```powershell
-irm https://botpager-api.reostack.com/cli/install.ps1 | iex
+irm https://botpager.reostack.com/cli/install.ps1 | iex
 ```
 
 Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. Alpine requires its standard `libstdc++` package; installers also require curl, tar/gzip and a SHA256 utility. OS/runtime minimums still apply; unsupported architectures are rejected.
