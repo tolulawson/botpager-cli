@@ -124,3 +124,54 @@ See [RELEASE.md](RELEASE.md) for bootstrap publication and subsequent trusted re
 ## License
 
 [MIT](LICENSE).
+
+### Computer identity
+
+Pairing uses a persistent, randomly generated computer ID in `~/.botpager/computer-id`.
+It is shared across CLI profiles for your OS user and stays the same when you rename
+this computer. Keep this file when moving configuration. Deleting it creates a new
+installation identity. The mobile app supplies its own persistent phone ID; the API
+rejects a second pairing of the same computer and phone with `ALREADY_PAIRED`.
+Pairing with a different phone is allowed. Remove an existing pairing before pairing
+that phone again. This requires the matching updated BotPager backend and mobile app.
+
+## Coding-agent skill
+
+Install the BotPager skill in your project for Codex, Claude Code, or another supported agent:
+
+```sh
+npx skills add tolulawson/botpager-cli --skill botpager
+```
+
+Choose your agent when prompted. Add `--global` to install for all your projects.
+This skill installer requires Node.js/npm; the standalone BotPager CLI does not.
+The [skill](skills/botpager/SKILL.md) covers pairing, task notifications, destinations,
+piped input, and error handling. Ask your agent to notify you when a task completes
+or needs your attention. Installing the skill does not pair a phone or send a message.
+
+## Upgrades and API compatibility
+
+```sh
+botpager upgrade --check --json
+botpager upgrade --json
+```
+
+Upgrades are explicit and non-interactive. npm installations upgrade through npm;
+standalone executables download the latest stable GitHub release, check SHA-256
+and the executable version, then replace the current executable. Configuration
+and pairings are retained. Source checkouts must be updated through Git instead.
+On Windows, a previous running executable may remain as a hidden backup until it
+can be removed after exit. No administrator elevation is attempted.
+
+API requests send client version and protocol revision headers. HTTP 426 becomes
+`UPGRADE_REQUIRED`, exits with **78**, and, with `--json`, writes a JSON error to
+stderr containing minimum versions and `upgradeCommand`. Agents should surface
+the requirement, run `botpager upgrade --json` when authorized, then deliberately
+retry the original command. It is never replayed automatically. Normal command
+failures use exit 1. A current CLI can still require an unreleased newer version;
+check the required version against the upgrade result before retrying.
+
+npm upgrades respect local npm policies (including publication-date restrictions).
+If npm rejects a release, the CLI reports a structured command failure; it does
+not bypass that policy. CLI versions predating the upgrade command must first be
+updated with the original installer or `npm install -g @reostack/botpager`.

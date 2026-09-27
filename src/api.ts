@@ -1,12 +1,14 @@
+import pkg from "../package.json";
 import { apiUrl, type Config } from "./config";
 
 export interface ApiErrorShape {
-  error: { code: string; message: string };
+  error: { code: string; message: string; protocolVersion?: number; minimumClientVersions?: Record<string, string> };
 }
 
 export class ApiRequestError extends Error {
   readonly status: number;
   readonly code: string;
+  requirements?: Pick<ApiErrorShape["error"], "protocolVersion" | "minimumClientVersions">;
 
   constructor(status: number, code: string, message: string) {
     super(message);
@@ -19,7 +21,9 @@ async function parse<T>(res: Response): Promise<T> {
   const data = (await res.json()) as T & ApiErrorShape;
   if (!res.ok) {
     const err = data?.error;
-    throw new ApiRequestError(res.status, err?.code ?? "HTTP_ERROR", err?.message ?? res.statusText);
+    const error = new ApiRequestError(res.status, err?.code ?? "HTTP_ERROR", err?.message ?? res.statusText);
+    if (error.code === "UPGRADE_REQUIRED") error.requirements = { protocolVersion: err?.protocolVersion, minimumClientVersions: err?.minimumClientVersions };
+    throw error;
   }
   return data;
 }
@@ -30,6 +34,9 @@ export async function api<T>(
   init: RequestInit & { token?: string } = {},
 ): Promise<T> {
   const headers = new Headers(init.headers);
+  headers.set("x-botpager-client", "cli");
+  headers.set("x-botpager-version", pkg.version);
+  headers.set("x-botpager-protocol", "2");
   if (init.body && !headers.has("content-type")) {
     headers.set("content-type", "application/json");
   }

@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
-import { createHash } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 
 const [executableArg, origin, reportArg] = process.argv.slice(2);
 assert(executableArg && origin && reportArg, 'Usage: node e2e-api.mjs <executable> <origin> <report>');
@@ -13,7 +13,7 @@ const config = join(dir, 'config.json');
 const checks = [], children = new Set();
 const report = { origin, artifactSha256: createHash('sha256').update(await readFile(executable)).digest('hex'), checks, pushDeliveryTested: false };
 let token, deviceId;
-const env = { ...process.env, BOTPAGER_CONFIG: config, BOTPAGER_API_URL: origin, BOTPAGER_DEVICE: '' };
+const env = { ...process.env, HOME: dir, BOTPAGER_CONFIG: config, BOTPAGER_API_URL: origin, BOTPAGER_DEVICE: '' };
 const delay = ms => new Promise(r => setTimeout(r, ms));
 function run(args, input) {
   const child = spawn(executable, args, { env, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -31,7 +31,7 @@ function run(args, input) {
   return { done, output: () => output };
 }
 async function request(path, method = 'GET', body, authenticated = true) {
-  const res = await fetch(origin + path, { method, headers: { 'content-type': 'application/json', ...(authenticated && token ? { authorization: `Bearer ${token}` } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(20000) });
+  const res = await fetch(origin + path, { method, headers: { 'x-botpager-client': 'cli', 'x-botpager-version': '0.2.0', 'x-botpager-protocol': '2', 'content-type': 'application/json', ...(authenticated && token ? { authorization: `Bearer ${token}` } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(20000) });
   return { status: res.status, body: await res.json() };
 }
 async function until(fn) {
@@ -49,7 +49,7 @@ try {
   await check('pair actual CLI with phone API', async () => {
     const pair = run(['pair', '--name', 'BotPager release verification']);
     const code = await until(() => pair.output().match(/\b[A-Z0-9]{4}-[A-Z0-9]{4}\b/)?.[0]);
-    const claim = await until(async () => { const c = await request('/v1/pair/claim', 'POST', { code, deviceName: 'CI ephemeral phone', platform: 'ios', pushToken: '' }, false); if (c.status === 404) return false; assert.equal(c.status, 200); return c.body; });
+    const claim = await until(async () => { const c = await request('/v1/pair/claim', 'POST', { code, phoneId: randomUUID(), deviceName: 'CI ephemeral phone', platform: 'ios', pushToken: '' }, false); if (c.status === 404) return false; assert.equal(c.status, 200); return c.body; });
     token = claim.token; deviceId = claim.deviceId;
     assert.equal((await pair.done).code, 0);
     const saved = JSON.parse(await readFile(config, 'utf8'));

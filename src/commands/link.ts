@@ -1,3 +1,4 @@
+import { computerIdentity } from "../computer-identity";
 import qrcode from "qrcode-terminal";
 import { ApiRequestError, api, type PairSession, type PairStart } from "../api";
 import { defaultCliName } from "../cli-name";
@@ -12,7 +13,7 @@ export async function linkCommand(name?: string): Promise<void> {
   const cliName = name?.trim() || defaultCliName();
   const started = await api<PairStart>(config, "/v1/pair/start", {
     method: "POST",
-    body: JSON.stringify({ cliName, cliPlatform: process.platform }),
+    body: JSON.stringify({ computerId: computerIdentity(), cliName, cliPlatform: process.platform }),
   });
 
   console.log(`\nLink this computer as "${cliName}"\n`);
