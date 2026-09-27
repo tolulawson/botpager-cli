@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import pkg from "../package.json";
 import { flagString, parseArgs } from "./args";
 import { defaultCommand } from "./commands/default";
 import { devicesCommand } from "./commands/devices";
@@ -32,6 +33,7 @@ Env:
 
 async function main(): Promise<void> {
   const { command, positionals, flags } = parseArgs(process.argv.slice(2));
+  if (flags.version) { console.log(pkg.version); return; }
   if (!command || flags.help) {
     console.log(HELP);
     if (!command && !flags.help) process.exitCode = 1;

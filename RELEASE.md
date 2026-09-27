@@ -1,7 +1,7 @@
 # CLI releases
 
 Package: `@reostack/botpager` · repository: `tolulawson/botpager-cli` · tags: `vX.Y.Z`.
-The production API remains `https://botpager-api.reostack.com`.
+Standalone binaries and npm are published together by `cli-release.yml`. Seven platform archives are exercised by `binaries.yml`; installers require no Node or Bun. The production API remains `https://botpager-api.reostack.com`.
 
 ## First publication
 
@@ -49,3 +49,21 @@ No npm token secret is needed after trusted publishing is configured. Public-rep
 ## Hosted installer
 
 `install.sh` is the canonical installer. The private API repository serves a reviewed copy at `/cli/install.sh`; its `workers/api/assets/cli/source.json` records this repository's commit and the installer's SHA256. When changing the installer, update that copy and provenance metadata in a separate API PR. Deploying the API neither publishes the CLI nor implicitly downloads a moving branch.
+
+## Release gates and assets
+
+The approved release job runs `scripts/e2e-api.mjs` against production for both the installed npm package and the Linux executable. It pairs an ephemeral device without push registration, sends and reads messages, verifies server duplicate handling, deletes messages, and revokes the pairing. This is not proof of push delivery to a physical phone.
+
+GitHub Actions retains redacted JSON reports even on failure. Platform jobs exercise installation without Node/Bun, repeated installation, paths containing spaces, checksum rejection and preservation of an existing install. musl binaries run in Alpine; other binaries run on matching OS/architecture runners.
+
+The job creates a draft GitHub Release with archives, `SHA256SUMS`, and `release.json` (source revision). It publishes npm only after all gates pass, then publishes the draft. No release asset is overwritten. Retries restore staged archives before testing; a different source revision at the same version is rejected. npm and GitHub are separate services, so a partial publication remains possible and must be resumed at the same commit/version.
+
+To repeat the live check without publishing:
+
+```sh
+node scripts/e2e-api.mjs /absolute/path/to/botpager https://botpager-api.reostack.com artifacts/e2e.json
+```
+
+For localhost Worker verification, substitute its origin. No customer credentials or push tokens are used. Run only against an authorized backend; the check creates and revokes test pairings. Server tombstones follow its retention policy.
+
+The API repository must deploy the reviewed `install.sh` and `install.ps1` copies before app users see the new installer behavior. Binary artifacts remain hosted at `https://github.com/tolulawson/botpager-cli/releases/download/vVERSION/`. The installer pins all downloads to one resolved stable release.

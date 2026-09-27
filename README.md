@@ -1,8 +1,26 @@
 # BotPager CLI
 
-Send messages from a computer to your paired BotPager mobile app. Requires Node.js 20 or newer and npm. Bun is only needed to build from source.
+Send messages from a computer to your paired BotPager mobile app. Standalone installers require neither Node.js nor Bun. The npm installation requires Node.js 20 or newer. Bun is only needed to build from source.
 
 ## Install and pair
+
+### Standalone (no Node)
+
+macOS and Linux:
+
+```sh
+curl -fsSL https://botpager-api.reostack.com/cli/install.sh | bash
+```
+
+Windows x64 (PowerShell):
+
+```powershell
+irm https://botpager-api.reostack.com/cli/install.ps1 | iex
+```
+
+Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. OS/runtime minimums still apply; unsupported architectures are rejected.
+
+### npm
 
 ```sh
 npm install --global @reostack/botpager
@@ -60,6 +78,24 @@ botpager send "Testing the local backend"
 To return to the default profile, unset both variables. The profiles retain independent devices and defaults.
 
 ## Updating and removing
+
+### Standalone (no Node)
+
+macOS and Linux:
+
+```sh
+curl -fsSL https://botpager-api.reostack.com/cli/install.sh | bash
+```
+
+Windows x64 (PowerShell):
+
+```powershell
+irm https://botpager-api.reostack.com/cli/install.ps1 | iex
+```
+
+Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. OS/runtime minimums still apply; unsupported architectures are rejected.
+
+### npm
 
 ```sh
 npm install --global @reostack/botpager@latest
