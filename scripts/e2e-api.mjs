@@ -44,6 +44,7 @@ async function check(name, fn) {
   catch { checks.push({ name, passed: false, durationMs: Date.now() - start }); throw new Error(`Failed: ${name}`); }
 }
 try {
+  await check('CLI version', async () => { const r = await run(['--version']).done; assert.equal(r.code, 0); assert.match(r.output.trim(), /^\d+\.\d+\.\d+$/); report.cliVersion = r.output.trim(); });
   await check('health', async () => { const h = await request('/healthz', 'GET', undefined, false); assert.equal(h.status, 200); assert.equal(h.body.ok, true); report.backendRevision = h.body.revision || 'local'; });
   await check('pair actual CLI with phone API', async () => {
     const pair = run(['pair', '--name', 'BotPager release verification']);
