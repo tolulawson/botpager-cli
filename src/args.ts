@@ -10,9 +10,19 @@ export function parseArgs(argv: string[]): ParsedArgs {
   const flags: Record<string, string | boolean> = {};
   const positionals: string[] = [];
   let command: string | undefined;
+  let optionsEnded = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
+    if (optionsEnded) {
+      if (!command) command = arg;
+      else positionals.push(arg);
+      continue;
+    }
+    if (arg === "--") {
+      optionsEnded = true;
+      continue;
+    }
     if (arg === "--help" || arg === "-h") {
       flags.help = true;
       continue;

@@ -1,15 +1,7 @@
 import { api } from "../api";
 import { loadConfig } from "../config";
 import { resolveDevice } from "../resolve";
-
-async function readMessage(positionals: string[]): Promise<string> {
-  if (positionals[0] === "-" || (positionals.length === 0 && !process.stdin.isTTY)) {
-    let input = "";
-    for await (const chunk of process.stdin) input += chunk.toString();
-    return input.trimEnd();
-  }
-  return positionals.join(" ").trim();
-}
+import { readMessage } from "../message-input";
 
 export async function sendCommand(opts: {
   ref?: string;
@@ -22,7 +14,7 @@ export async function sendCommand(opts: {
 }): Promise<void> {
   const config = loadConfig();
   const device = resolveDevice(config, opts.ref);
-  const body = await readMessage(opts.message);
+  const body = await readMessage(opts.message, opts.title);
   if (!body && !opts.title?.trim()) {
     console.error("Usage: botpager send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [message|-]");
     process.exitCode = 1;
