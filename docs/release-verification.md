@@ -16,3 +16,19 @@ All release tests operate on installed artifacts / subprocesses, not imported CL
 - Production unavailable: release must stop before publication. PR tests exercise installers and packaged runtime on the OS matrix. The live API E2E runs only in the approved release workflow and can also be invoked explicitly against a local or deployed Worker.
 
 Artifacts: JSON E2E and installer reports, package/binary archives, SHA256SUMS, and release source manifest. CI uploads reports even on failure.
+
+## Review regression scenarios (before fixes)
+
+1. Draft B differs from rebuilt A. Only a release-only preparation job with write access may discover/download B; read-only platform jobs must select B from its workflow artifact before tests. Publication must verify each platform's recorded SHA256 against the final archives.
+2. Missing prepared manifest, wrong source revision, altered prepared bytes, missing platform report, or replacement after platform testing must stop publication. A first release with no draft may use fresh builds. A partial draft may supply a subset, but every selected archive still runs its platform tests.
+3. A duplicate response that says `duplicate` but changes title, body, kind, project, device ID, computer name, or receivedAt must fail the live E2E gate. A correct duplicate preserving these fields must pass.
+
+Regression verification runs complete scripts as subprocesses with a permission-aware GitHub fixture and an HTTP backend fixture. It does not establish real GitHub authorization; workflow permissions and data flow are also checked explicitly. Reports are retained as CI artifacts.
+
+Run the review regression scenarios with an installed CLI:
+
+```sh
+node scripts/test-release-gates.mjs /absolute/path/to/botpager
+```
+
+The repeatable result is `artifacts/release-gate-regressions.json`, also uploaded by both Node CI jobs. Its GitHub permissions and HTTP responses are fixtures; platform CI and the production API E2E remain separate gates.

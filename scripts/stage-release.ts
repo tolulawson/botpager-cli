@@ -1,9 +1,11 @@
+import { verify } from './platform-artifacts';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import pkg from '../package.json';
+verify();
 const tag = `v${pkg.version}`;
 const sha = process.env.GITHUB_SHA!;
 const gh = (args: string[]) => execFileSync('gh', args, { encoding: 'utf8' });

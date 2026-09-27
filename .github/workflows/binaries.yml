@@ -1,6 +1,10 @@
 name: Standalone artifacts
 on:
   workflow_call:
+    inputs:
+      prepared:
+        type: boolean
+        default: false
   pull_request:
 permissions:
   contents: read
@@ -26,14 +30,14 @@ jobs:
         with: { node-version: '24' }
       - run: bun install --frozen-lockfile
       - run: bun scripts/build-binary.ts ${{ matrix.target }}
-      - name: Reuse staged release bytes on retries
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: bun scripts/restore-staged.ts
-      - name: Assemble host checksum manifest
+      - uses: actions/download-artifact@v4
+        if: inputs.prepared
+        with:
+          name: release-inputs
+          path: prepared
+      - name: Select bytes before platform verification
         shell: bash
-        run: test -f artifacts/SHA256SUMS || cat artifacts/SHA256SUMS-* > artifacts/SHA256SUMS
+        run: bun scripts/platform-artifacts.ts select ${{ matrix.target }} ${{ inputs.prepared && '--prepared' || '' }}
       - name: Test Unix installer without Node or Bun
         if: runner.os != 'Windows' && !contains(matrix.target, 'musl')
         run: bash scripts/test-installer.sh artifacts
@@ -59,6 +63,8 @@ jobs:
             tar -xzf artifacts/*.tar.gz -C unpacked
             node scripts/test-cli-runtime.mjs "$PWD/unpacked/botpager"
           fi
+      - name: Record successful platform verification
+        run: bun scripts/platform-artifacts.ts record ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

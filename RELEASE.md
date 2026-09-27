@@ -56,7 +56,7 @@ The approved release job runs `scripts/e2e-api.mjs` against production for both 
 
 GitHub Actions retains redacted JSON reports even on failure. Platform jobs exercise installation without Node/Bun, repeated installation, paths containing spaces, checksum rejection and preservation of an existing install. musl binaries run in Alpine; other binaries run on matching OS/architecture runners.
 
-The job creates a draft GitHub Release with archives, `SHA256SUMS`, and `release.json` (source revision). It publishes npm only after all gates pass, then publishes the draft. No release asset is overwritten. Retries restore staged archives before testing; a different source revision at the same version is rejected. npm and GitHub are separate services, so a partial publication remains possible and must be resumed at the same commit/version.
+The job creates a draft GitHub Release with archives, `SHA256SUMS`, and `release.json` (source revision). It publishes npm only after all gates pass, then publishes the draft. No release asset is overwritten. A release-only preparation job uses a write-enabled token to discover draft assets and uploads their bytes plus a source-bound SHA-256 manifest. Read-only platform jobs select those bytes before installer/runtime tests, then record the tested archive hashes. Staging verifies all seven success reports against the exact archives to publish; no binary restoration happens after tests. The npm tarball is selected from the same prepared input before npm verification. a different source revision at the same version is rejected. npm and GitHub are separate services, so a partial publication remains possible and must be resumed at the same commit/version.
 
 To repeat the live check without publishing:
 

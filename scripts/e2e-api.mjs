@@ -62,18 +62,24 @@ try {
     { args: ['send', '--json', '--title', 'Unicode', '-'], input: 'Deploy 🚀 café 日本語', title: 'Unicode', body: 'Deploy 🚀 café 日本語' },
     { args: ['send', '--json', '--', '--deployment-failed'], body: '--deployment-failed' },
   ];
-  const ids = [];
+  const ids = [], originals = [];
   for (const item of expected) await check(`send and retrieve: ${item.title || 'literal options'}`, async () => {
     const result = await run(item.args, item.input).done;
     assert.equal(result.code, 0);
     const sent = JSON.parse(result.output); assert.equal(sent.delivery, 'stored'); ids.push(sent.messageId);
     const message = await until(async () => { const h = await request('/v1/messages'); assert.equal(h.status, 200); return h.body.messages.find(m => m.id === sent.messageId); });
+    originals.push(message);
     assert.equal(message.body, item.body); if (item.title) assert.equal(message.title, item.title);
   });
   await check('server idempotency', async () => {
     const r = await request('/v1/send', 'POST', { messageId: ids[0], title: 'Must not replace', body: 'Must not replace' });
     assert.equal(r.status, 200); assert.equal(r.body.delivery, 'duplicate');
-    const h = await request('/v1/messages'); assert.equal(h.body.messages.filter(m => m.id === ids[0]).length, 1);
+    const h = await request('/v1/messages'); assert.equal(h.status, 200);
+    const matches = h.body.messages.filter(m => m.id === ids[0]);
+    assert.equal(matches.length, 1);
+    for (const field of ['id', 'title', 'body', 'kind', 'project', 'deviceId', 'computerName', 'receivedAt']) {
+      assert.deepEqual(matches[0][field], originals[0][field], `Duplicate changed ${field}`);
+    }
   });
   await check('delete history', async () => { const r = await request('/v1/messages', 'DELETE', { ids }); assert.equal(r.status, 200); await until(async () => { const h = await request('/v1/messages'); return ids.every(id => h.body.deletedIds.includes(id)) && !h.body.messages.some(m => ids.includes(m.id)); }); });
   await check('unlink actual CLI and reject revoked credentials', async () => {

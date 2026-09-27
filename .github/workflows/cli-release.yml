@@ -21,7 +21,36 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: npm-production
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - name: Validate release identity
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: bun scripts/check-release.ts "$RELEASE_VERSION"
+      - name: Prepare existing draft bytes with release authorization
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/prepare-release-inputs.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-inputs
+          path: prepared/
+          if-no-files-found: error
   binaries:
+    needs: prepare
+    with:
+      prepared: true
     uses: ./.github/workflows/binaries.yml
   release:
     needs: binaries
@@ -56,7 +85,11 @@ jobs:
       - name: Collect standalone archives
         run: |
           mkdir -p artifacts
-          find standalone -type f \( -name '*.tar.gz' -o -name '*.zip' \) -exec cp {} artifacts/ \;
+          find standalone -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name 'tested-*.json' \) -exec cp {} artifacts/ \;
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-inputs
+          path: prepared
       - name: Check production API
         run: |
           curl --fail --silent --show-error --max-time 20 https://botpager-api.reostack.com/healthz > health.json
@@ -68,7 +101,7 @@ jobs:
         run: |
           mkdir -p artifacts
           npm pack . --pack-destination artifacts
-          bun scripts/restore-staged.ts
+          bun scripts/platform-artifacts.ts select npm --prepared
           bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-botpager-$RELEASE_VERSION.tgz"
           cd artifacts
           sha256sum ./*.tgz > SHA256SUMS
