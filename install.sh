@@ -35,7 +35,7 @@ main() {
   [[ "$actual" == "$expected" ]] || { echo 'Checksum mismatch; existing installation preserved' >&2; return 1; }
   tar -xzf "$temp/archive.tar.gz" -C "$temp" botpager
   chmod 755 "$temp/botpager"
-  [[ "$("$temp/botpager" --version)" == "$version" ]] || { echo 'Binary cannot run or version mismatch' >&2; return 1; }
+  [[ "$("$temp/botpager" --version)" == "$version" ]] || { echo 'Binary cannot run or version mismatch. On Alpine, install the libstdc++ package first.' >&2; return 1; }
   mv -f "$temp/botpager" "$dest/botpager"
   rm -rf "$temp"
   trap - EXIT

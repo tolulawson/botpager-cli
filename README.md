@@ -18,7 +18,7 @@ Windows x64 (PowerShell):
 irm https://botpager-api.reostack.com/cli/install.ps1 | iex
 ```
 
-Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. OS/runtime minimums still apply; unsupported architectures are rejected.
+Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. Alpine requires its standard `libstdc++` package; installers also require curl, tar/gzip and a SHA256 utility. OS/runtime minimums still apply; unsupported architectures are rejected.
 
 ### npm
 
@@ -93,7 +93,7 @@ Windows x64 (PowerShell):
 irm https://botpager-api.reostack.com/cli/install.ps1 | iex
 ```
 
-Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. OS/runtime minimums still apply; unsupported architectures are rejected.
+Installers verify SHA256 checksums, install into a user-owned directory, and leave shell profiles unchanged. Follow the printed PATH instructions if needed. Set `BOTPAGER_VERSION=0.1.0` to pin a release and `BOTPAGER_INSTALL_DIR` to change the destination. Supported standalone builds: macOS ARM64/x64, Linux ARM64/x64 (glibc and musl), Windows x64. Alpine requires its standard `libstdc++` package; installers also require curl, tar/gzip and a SHA256 utility. OS/runtime minimums still apply; unsupported architectures are rejected.
 
 ### npm
 
