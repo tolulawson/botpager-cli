@@ -16,7 +16,7 @@ const HELP = `botpager — page a paired phone
 
 Usage:
   botpager upgrade [--check] [--json]
-  botpager pair [--name <cliName>]
+  botpager pair [--name <cliName>] [--json]
   botpager send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [--priority high|normal] [--json] [message|-]
   botpager devices [--json]
   botpager default <ref>
@@ -47,7 +47,7 @@ async function main(): Promise<void> {
       await upgradeCommand(flags.check === true, flags.json === true);
       return;
     case "pair":
-      await linkCommand(flagString(flags, "name"));
+      await linkCommand(flagString(flags, "name"), flags.json === true);
       return;
     case "send":
       await sendCommand({

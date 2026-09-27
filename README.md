@@ -175,3 +175,11 @@ npm upgrades respect local npm policies (including publication-date restrictions
 If npm rejects a release, the CLI reports a structured command failure; it does
 not bypass that policy. CLI versions predating the upgrade command must first be
 updated with the original installer or `npm install -g @reostack/botpager`.
+
+### Pairing connection and recovery (0.3.0)
+
+`botpager pair` receives the phone's confirmation over a live connection. It automatically falls back to long polling if streaming is unavailable. If interrupted, run the same command with the same configuration to resume the unfinished session; it does not create another pairing code while that session is still valid.
+
+The CLI saves credentials before acknowledging delivery. Temporary network failures do not consume the credentials. `botpager pair --json` emits newline-delimited `pairing` and `linked` events, with no credentials in its output. The pairing event contains the code and QR URL for the user to confirm.
+
+Release 0.3.0 requires the companion Durable Object pairing API. Existing KV-only pairings must be unlinked before the coordinated backend rollout and paired again afterward.

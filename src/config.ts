@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, renameSync, openSync, fsyncSync, closeSync, rmSync } from "node:fs";
 
 export interface LinkedDevice {
   deviceId: string;
@@ -46,7 +46,13 @@ export function loadConfig(): Config {
 export function saveConfig(config: Config): void {
   const path = configPath();
   mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
-  writeFileSync(path, JSON.stringify(config, null, 2) + "\n", { mode: 0o600 });
+  const temp = `${path}.${process.pid}.tmp`;
+  try {
+    writeFileSync(temp, JSON.stringify(config, null, 2) + "\n", { mode: 0o600 });
+    const fd = openSync(temp, 'r');
+    try { fsyncSync(fd); } finally { closeSync(fd); }
+    renameSync(temp, path);
+  } finally { rmSync(temp, { force: true }); }
 }
 
 export function apiUrl(config: Config): string {
