@@ -1,0 +1,12 @@
+node_modules/
+dist/
+artifacts/
+coverage/
+.env
+.env.*
+.npmrc
+.botpager/
+*.tgz
+*.log
+*.tsbuildinfo
+.DS_Store

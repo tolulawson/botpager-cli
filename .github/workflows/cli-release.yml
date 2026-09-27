@@ -1,0 +1,79 @@
+name: Release CLI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Stable version already committed in package.json (for example 0.1.0)'
+        required: true
+        type: string
+
+concurrency:
+  group: cli-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: npm-production
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - run: bun install --frozen-lockfile
+      - name: Validate release identity
+        id: release
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: bun scripts/check-release.ts "$RELEASE_VERSION"
+      - run: bun run typecheck
+      - run: bun run test
+      - name: Check production API
+        run: |
+          curl --fail --silent --show-error --max-time 20 https://pagerbot.reostack.com/healthz > health.json
+          node -e 'if (JSON.parse(require("fs").readFileSync("health.json")).ok !== true) process.exit(1)'
+      - name: Pack and install the release artifact
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          mkdir -p artifacts
+          npm pack . --pack-destination artifacts
+          bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-pagerbot-$RELEASE_VERSION.tgz"
+          cd artifacts
+          sha256sum ./*.tgz > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pagerbot-cli-${{ steps.release.outputs.version }}
+          path: artifacts/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      # Configure npm trusted publishing for this exact filename and environment.
+      - name: Publish through npm OIDC and verify registry integrity
+        run: bun scripts/publish-cli.ts
+      - name: Tag and publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS --clobber
+          else
+            gh release create "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS \
+              --target "$RELEASE_SHA" --title "PagerBot CLI $RELEASE_TAG" --generate-notes
+          fi
