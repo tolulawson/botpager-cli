@@ -1,7 +1,7 @@
 # CLI releases
 
-Package: `@reostack/pagerbot` · repository: `tolulawson/pagerbot-cli` · tags: `vX.Y.Z`.
-The production API remains `https://pagerbot.reostack.com`.
+Package: `@reostack/botpager` · repository: `tolulawson/botpager-cli` · tags: `vX.Y.Z`.
+The production API remains `https://botpager-api.reostack.com`.
 
 ## First publication
 
@@ -14,8 +14,8 @@ The package has not yet been bootstrapped on npm. Do not dispatch the release wo
    bun run check
    mkdir -p artifacts
    npm pack . --pack-destination artifacts
-   bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-pagerbot-0.1.0.tgz"
-   npm publish artifacts/reostack-pagerbot-0.1.0.tgz --access public
+   bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-botpager-0.1.0.tgz"
+   npm publish artifacts/reostack-botpager-0.1.0.tgz --access public
    ```
 
    Complete npm's interactive authentication/2FA. Do not store an OTP or a long-lived publishing token in GitHub.
@@ -25,7 +25,7 @@ The package has not yet been bootstrapped on npm. Do not dispatch the release wo
    | Field | Value |
    | --- | --- |
    | GitHub owner | `tolulawson` |
-   | Repository | `pagerbot-cli` |
+   | Repository | `botpager-cli` |
    | Workflow filename | `cli-release.yml` |
    | Environment | `npm-production` |
    | Allowed action | Direct `npm publish` |
@@ -38,7 +38,7 @@ The package has not yet been bootstrapped on npm. Do not dispatch the release wo
 2. Dispatch from `main`:
 
    ```sh
-   gh workflow run cli-release.yml --repo tolulawson/pagerbot-cli --ref main -f version=0.1.0
+   gh workflow run cli-release.yml --repo tolulawson/botpager-cli --ref main -f version=0.1.0
    ```
 
 3. Approve the `npm-production` environment deployment. It permits only `main` and requires the repository owner's approval. GitHub approval is not a fresh MFA challenge for each run.

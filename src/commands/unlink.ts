@@ -4,7 +4,7 @@ import { resolveDevice } from "../resolve";
 
 export async function unlinkCommand(ref: string | undefined): Promise<void> {
   if (!ref) {
-    console.error("Usage: pagerbot unlink <ref>");
+    console.error("Usage: botpager unlink <ref>");
     process.exitCode = 1;
     return;
   }

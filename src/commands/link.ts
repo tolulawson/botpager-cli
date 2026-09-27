@@ -16,7 +16,7 @@ export async function linkCommand(name?: string): Promise<void> {
   });
 
   console.log(`\nLink this computer as "${cliName}"\n`);
-  console.log("Scan the QR code in the PagerBot app, or enter this code:\n");
+  console.log("Scan the QR code in the BotPager app, or enter this code:\n");
   console.log(`  ${started.code}\n`);
   qrcode.generate(started.qrPayload, { small: true });
   console.log("Waiting for the phone to claim…\n");
@@ -30,21 +30,21 @@ export async function linkCommand(name?: string): Promise<void> {
       session = await api<PairSession>(config, `/v1/pair/session/${started.sessionId}`);
     } catch (err) {
       if (err instanceof ApiRequestError && err.code === "SESSION_NOT_FOUND") {
-        console.error("Code expired. Run pagerbot pair again.");
+        console.error("Code expired. Run botpager pair again.");
         process.exitCode = 1;
         return;
       }
       throw err;
     }
     if (session.status === "expired") {
-      console.error("Code expired. Run pagerbot pair again.");
+      console.error("Code expired. Run botpager pair again.");
       process.exitCode = 1;
       return;
     }
     if (session.status === "linked" && session.deviceId && session.deviceName) {
       if (!session.token) {
         console.error(
-          "Phone linked, but the pairing token was already consumed. Run pagerbot pair again.",
+          "Phone linked, but the pairing token was already consumed. Run botpager pair again.",
         );
         process.exitCode = 1;
         return;
@@ -64,6 +64,6 @@ export async function linkCommand(name?: string): Promise<void> {
     await sleep(1500);
   }
 
-  console.error("Code expired. Run pagerbot pair again.");
+  console.error("Code expired. Run botpager pair again.");
   process.exitCode = 1;
 }

@@ -17,10 +17,10 @@ export interface Config {
   devices: LinkedDevice[];
 }
 
-const DEFAULT_API = "https://pagerbot.reostack.com";
+const DEFAULT_API = "https://botpager-api.reostack.com";
 
 export function configPath(): string {
-  return process.env.PAGERBOT_CONFIG || process.env.BOTPAGER_CONFIG || join(homedir(), ".botpager", "config.json");
+  return process.env.BOTPAGER_CONFIG || join(homedir(), ".botpager", "config.json");
 }
 
 function isMissingFile(err: unknown): boolean {
@@ -50,7 +50,7 @@ export function saveConfig(config: Config): void {
 }
 
 export function apiUrl(config: Config): string {
-  return (process.env.PAGERBOT_API_URL || process.env.BOTPAGER_API_URL || config.apiUrl || DEFAULT_API).replace(/\/+$/, "");
+  return (process.env.BOTPAGER_API_URL || config.apiUrl || DEFAULT_API).replace(/\/+$/, "");
 }
 
 export function upsertDevice(config: Config, device: LinkedDevice): Config {

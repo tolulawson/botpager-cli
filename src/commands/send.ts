@@ -24,7 +24,7 @@ export async function sendCommand(opts: {
   const device = resolveDevice(config, opts.ref);
   const body = await readMessage(opts.message);
   if (!body && !opts.title?.trim()) {
-    console.error("Usage: pagerbot send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [message|-]");
+    console.error("Usage: botpager send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [message|-]");
     process.exitCode = 1;
     return;
   }

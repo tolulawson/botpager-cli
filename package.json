@@ -1,10 +1,9 @@
 {
-  "name": "@reostack/pagerbot",
+  "name": "@reostack/botpager",
   "version": "0.1.0",
-  "description": "Send messages from your terminal to the PagerBot mobile app",
+  "description": "Send messages from your terminal to the BotPager mobile app",
   "type": "module",
   "bin": {
-    "pagerbot": "./dist/index.js",
     "botpager": "./dist/index.js"
   },
   "files": [
@@ -19,7 +18,6 @@
     "prepack": "bun run build",
     "typecheck": "tsc --noEmit",
     "test": "bun test src",
-    "pagerbot": "bun src/index.ts",
     "check": "bun run typecheck && bun run test"
   },
   "dependencies": {
@@ -32,11 +30,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tolulawson/pagerbot-cli.git"
+    "url": "git+https://github.com/tolulawson/botpager-cli.git"
   },
-  "homepage": "https://github.com/tolulawson/pagerbot-cli#readme",
+  "homepage": "https://github.com/tolulawson/botpager-cli#readme",
   "bugs": {
-    "url": "https://github.com/tolulawson/pagerbot-cli/issues"
+    "url": "https://github.com/tolulawson/botpager-cli/issues"
   },
   "publishConfig": {
     "access": "public",

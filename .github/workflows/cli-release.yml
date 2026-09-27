@@ -43,7 +43,7 @@ jobs:
       - run: bun run test
       - name: Check production API
         run: |
-          curl --fail --silent --show-error --max-time 20 https://pagerbot.reostack.com/healthz > health.json
+          curl --fail --silent --show-error --max-time 20 https://botpager-api.reostack.com/healthz > health.json
           node -e 'if (JSON.parse(require("fs").readFileSync("health.json")).ok !== true) process.exit(1)'
       - name: Pack and install the release artifact
         env:
@@ -51,12 +51,12 @@ jobs:
         run: |
           mkdir -p artifacts
           npm pack . --pack-destination artifacts
-          bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-pagerbot-$RELEASE_VERSION.tgz"
+          bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-botpager-$RELEASE_VERSION.tgz"
           cd artifacts
           sha256sum ./*.tgz > SHA256SUMS
       - uses: actions/upload-artifact@v4
         with:
-          name: pagerbot-cli-${{ steps.release.outputs.version }}
+          name: botpager-cli-${{ steps.release.outputs.version }}
           path: artifacts/
       - uses: actions/setup-node@v5
         with:
@@ -75,5 +75,5 @@ jobs:
             gh release upload "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS --clobber
           else
             gh release create "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS \
-              --target "$RELEASE_SHA" --title "PagerBot CLI $RELEASE_TAG" --generate-notes
+              --target "$RELEASE_SHA" --title "BotPager CLI $RELEASE_TAG" --generate-notes
           fi
