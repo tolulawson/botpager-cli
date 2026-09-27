@@ -10,3 +10,8 @@ coverage/
 *.log
 *.tsbuildinfo
 .DS_Store
+
+/artifacts/
+/VERSION
+
+/unpacked/

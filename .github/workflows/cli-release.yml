@@ -8,6 +8,11 @@ on:
         required: true
         type: string
 
+      prepare_only:
+        description: 'Bootstrap: verify and stage artifacts without publishing to npm or making the release public'
+        type: boolean
+        default: false
+
 concurrency:
   group: cli-release
   cancel-in-progress: false
@@ -16,7 +21,39 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: npm-production
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - name: Validate release identity
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: bun scripts/check-release.ts "$RELEASE_VERSION"
+      - name: Prepare existing draft bytes with release authorization
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/prepare-release-inputs.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-inputs
+          path: prepared/
+          if-no-files-found: error
+  binaries:
+    needs: prepare
+    with:
+      prepared: true
+    uses: ./.github/workflows/binaries.yml
   release:
+    needs: binaries
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: npm-production
@@ -41,6 +78,18 @@ jobs:
         run: bun scripts/check-release.ts "$RELEASE_VERSION"
       - run: bun run typecheck
       - run: bun run test
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: standalone-*
+          path: standalone
+      - name: Collect standalone archives
+        run: |
+          mkdir -p artifacts
+          find standalone -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name 'tested-*.json' \) -exec cp {} artifacts/ \;
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-inputs
+          path: prepared
       - name: Check production API
         run: |
           curl --fail --silent --show-error --max-time 20 https://botpager-api.reostack.com/healthz > health.json
@@ -48,13 +97,27 @@ jobs:
       - name: Pack and install the release artifact
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p artifacts
           npm pack . --pack-destination artifacts
+          bun scripts/platform-artifacts.ts select npm --prepared
           bash scripts/smoke-cli-package.sh "$PWD/artifacts/reostack-botpager-$RELEASE_VERSION.tgz"
           cd artifacts
           sha256sum ./*.tgz > SHA256SUMS
+      - name: Production E2E with installed npm artifact and Linux binary
+        run: |
+          npm install --prefix /tmp/botpager-e2e --ignore-scripts "$PWD"/artifacts/*.tgz
+          node scripts/e2e-api.mjs /tmp/botpager-e2e/node_modules/.bin/botpager https://botpager-api.reostack.com artifacts/e2e-npm.json
+          mkdir -p /tmp/botpager-native
+          tar -xzf artifacts/botpager-*-linux-x64.tar.gz -C /tmp/botpager-native
+          node scripts/e2e-api.mjs /tmp/botpager-native/botpager https://botpager-api.reostack.com artifacts/e2e-native.json
+      - name: Stage immutable GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/stage-release.ts
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: botpager-cli-${{ steps.release.outputs.version }}
           path: artifacts/
@@ -64,16 +127,18 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       # Configure npm trusted publishing for this exact filename and environment.
       - name: Publish through npm OIDC and verify registry integrity
+        if: ${{ !inputs.prepare_only }}
         run: bun scripts/publish-cli.ts
-      - name: Tag and publish GitHub release
+      - name: Publish completed GitHub release
+        if: ${{ !inputs.prepare_only }}
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
-          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: gh release edit "$RELEASE_TAG" --draft=false --latest
+      - name: Verify public binary installer and npm install
+        if: ${{ !inputs.prepare_only }}
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS --clobber
-          else
-            gh release create "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS \
-              --target "$RELEASE_SHA" --title "BotPager CLI $RELEASE_TAG" --generate-notes
-          fi
+          BOTPAGER_VERSION=${{ inputs.version }} BOTPAGER_INSTALL_DIR=/tmp/botpager-public bash install.sh
+          /tmp/botpager-public/botpager --version
+          npm install --prefix /tmp/botpager-public-npm --ignore-scripts @reostack/botpager@${{ inputs.version }}
+          test "$(/tmp/botpager-public-npm/node_modules/.bin/botpager --version)" = '${{ inputs.version }}'

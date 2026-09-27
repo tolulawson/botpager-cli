@@ -1,0 +1,73 @@
+name: Standalone artifacts
+on:
+  workflow_call:
+    inputs:
+      prepared:
+        type: boolean
+        default: false
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  binary:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: darwin-arm64, runner: macos-14 }
+          - { target: darwin-x64, runner: macos-15-intel }
+          - { target: linux-x64, runner: ubuntu-24.04 }
+          - { target: linux-arm64, runner: ubuntu-24.04-arm }
+          - { target: linux-x64-musl, runner: ubuntu-24.04 }
+          - { target: linux-arm64-musl, runner: ubuntu-24.04-arm }
+          - { target: windows-x64, runner: windows-latest }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: '1.4.2' }
+      - uses: actions/setup-node@v5
+        with: { node-version: '24' }
+      - run: bun install --frozen-lockfile
+      - run: bun scripts/build-binary.ts ${{ matrix.target }}
+      - uses: actions/download-artifact@v4
+        if: inputs.prepared
+        with:
+          name: release-inputs
+          path: prepared
+      - name: Select bytes before platform verification
+        shell: bash
+        run: bun scripts/platform-artifacts.ts select ${{ matrix.target }} ${{ inputs.prepared && '--prepared' || '' }}
+      - name: Test Unix installer without Node or Bun
+        if: runner.os != 'Windows' && !contains(matrix.target, 'musl')
+        run: bash scripts/test-installer.sh artifacts
+      - name: Test musl installer in Alpine without Node or Bun
+        if: contains(matrix.target, 'musl')
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work alpine:3.22 sh -c 'apk add --no-cache bash curl tar coreutils perl-utils libstdc++; bash scripts/test-installer.sh artifacts'
+      - name: Test Windows installer without Node or Bun
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/test-windows-installer.ps1
+      - name: Exercise standalone CLI runtime
+        if: "!contains(matrix.target, 'musl')"
+        shell: bash
+        env:
+          BOTPAGER_TEST_BINARY: '1'
+        run: |
+          mkdir -p unpacked
+          if [[ '${{ runner.os }}' == Windows ]]; then
+            unzip artifacts/*.zip -d unpacked
+            node scripts/test-cli-runtime.mjs "$PWD/unpacked/botpager.exe"
+          else
+            tar -xzf artifacts/*.tar.gz -C unpacked
+            node scripts/test-cli-runtime.mjs "$PWD/unpacked/botpager"
+          fi
+      - name: Record successful platform verification
+        run: bun scripts/platform-artifacts.ts record ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: standalone-${{ matrix.target }}
+          path: artifacts/
+          if-no-files-found: error

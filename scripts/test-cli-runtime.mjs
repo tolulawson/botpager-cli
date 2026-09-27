@@ -27,7 +27,7 @@ await writeFile(configPath, JSON.stringify({ apiUrl: origin, defaultDevice: 'tes
 ] }));
 
 async function run(args, input, apiUrl = origin) {
-  const child = spawn(process.execPath, [executable, ...args], {
+  const child = spawn(process.env.BOTPAGER_TEST_BINARY ? executable : process.execPath, process.env.BOTPAGER_TEST_BINARY ? args : [executable, ...args], {
     env: { ...process.env, BOTPAGER_CONFIG: configPath, BOTPAGER_API_URL: apiUrl, BOTPAGER_DEVICE: '' },
     stdio: ['pipe', 'pipe', 'pipe'],
   });

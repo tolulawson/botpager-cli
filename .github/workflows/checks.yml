@@ -28,3 +28,12 @@ jobs:
           npm pack . --pack-destination artifacts
           bash scripts/smoke-cli-package.sh "$PWD/$(find artifacts -name '*.tgz' -print -quit)"
           bash -n install.sh
+      - name: Verify release gates with installed package
+        run: |
+          npm install --prefix /tmp/botpager-gate-cli --ignore-scripts "$PWD"/artifacts/*.tgz
+          node scripts/test-release-gates.mjs /tmp/botpager-gate-cli/node_modules/.bin/botpager
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-gates-node-${{ matrix.node }}
+          path: artifacts/release-gate-regressions.json
