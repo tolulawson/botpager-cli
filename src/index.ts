@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { upgradeCommand } from "./commands/upgrade";
 import pkg from "../package.json";
 import { flagString, parseArgs } from "./args";
 import { defaultCommand } from "./commands/default";
@@ -14,6 +15,7 @@ import { ResolveError } from "./resolve";
 const HELP = `botpager — page a paired phone
 
 Usage:
+  botpager upgrade [--check] [--json]
   botpager pair [--name <cliName>]
   botpager send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [--priority high|normal] [--json] [message|-]
   botpager devices [--json]
@@ -41,6 +43,9 @@ async function main(): Promise<void> {
   }
 
   switch (command) {
+    case "upgrade":
+      await upgradeCommand(flags.check === true, flags.json === true);
+      return;
     case "pair":
       await linkCommand(flagString(flags, "name"));
       return;
@@ -78,6 +83,19 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
+  const json = parseArgs(process.argv.slice(2)).flags.json === true;
+  if (err instanceof ApiRequestError && err.code === "UPGRADE_REQUIRED") {
+    const error = { code: err.code, message: err.message, ...err.requirements, currentVersion: pkg.version,
+      upgradeCommand: "botpager upgrade --json", retryOriginalCommand: false };
+    console.error(json ? JSON.stringify({ error }) : `${err.message}\nRun: botpager upgrade\nThen retry your original command.`);
+    process.exitCode = 78;
+    return;
+  }
+  if (json) {
+    console.error(JSON.stringify({ error: { code: err instanceof ApiRequestError ? err.code : "COMMAND_FAILED", message: err instanceof Error ? err.message : String(err) } }));
+    process.exitCode = 1;
+    return;
+  }
   if (err instanceof ResolveError || err instanceof ApiRequestError) {
     console.error(err.message);
   } else if (err instanceof Error) {

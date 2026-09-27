@@ -148,3 +148,30 @@ This skill installer requires Node.js/npm; the standalone BotPager CLI does not.
 The [skill](skills/botpager/SKILL.md) covers pairing, task notifications, destinations,
 piped input, and error handling. Ask your agent to notify you when a task completes
 or needs your attention. Installing the skill does not pair a phone or send a message.
+
+## Upgrades and API compatibility
+
+```sh
+botpager upgrade --check --json
+botpager upgrade --json
+```
+
+Upgrades are explicit and non-interactive. npm installations upgrade through npm;
+standalone executables download the latest stable GitHub release, check SHA-256
+and the executable version, then replace the current executable. Configuration
+and pairings are retained. Source checkouts must be updated through Git instead.
+On Windows, a previous running executable may remain as a hidden backup until it
+can be removed after exit. No administrator elevation is attempted.
+
+API requests send client version and protocol revision headers. HTTP 426 becomes
+`UPGRADE_REQUIRED`, exits with **78**, and, with `--json`, writes a JSON error to
+stderr containing minimum versions and `upgradeCommand`. Agents should surface
+the requirement, run `botpager upgrade --json` when authorized, then deliberately
+retry the original command. It is never replayed automatically. Normal command
+failures use exit 1. A current CLI can still require an unreleased newer version;
+check the required version against the upgrade result before retrying.
+
+npm upgrades respect local npm policies (including publication-date restrictions).
+If npm rejects a release, the CLI reports a structured command failure; it does
+not bypass that policy. CLI versions predating the upgrade command must first be
+updated with the original installer or `npm install -g @reostack/botpager`.

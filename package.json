@@ -1,6 +1,6 @@
 {
   "name": "@reostack/botpager",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Send messages from your terminal to the BotPager mobile app",
   "type": "module",
   "bin": {

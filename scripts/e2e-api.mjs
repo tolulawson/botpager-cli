@@ -31,7 +31,7 @@ function run(args, input) {
   return { done, output: () => output };
 }
 async function request(path, method = 'GET', body, authenticated = true) {
-  const res = await fetch(origin + path, { method, headers: { 'content-type': 'application/json', ...(authenticated && token ? { authorization: `Bearer ${token}` } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(20000) });
+  const res = await fetch(origin + path, { method, headers: { 'x-botpager-client': 'cli', 'x-botpager-version': '0.2.0', 'x-botpager-protocol': '2', 'content-type': 'application/json', ...(authenticated && token ? { authorization: `Bearer ${token}` } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(20000) });
   return { status: res.status, body: await res.json() };
 }
 async function until(fn) {
