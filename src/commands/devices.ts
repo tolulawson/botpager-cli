@@ -22,7 +22,7 @@ export function devicesCommand(asJson: boolean): void {
     return;
   }
   if (config.devices.length === 0) {
-    console.log("No linked devices. Run pagerbot pair.");
+    console.log("No linked devices. Run botpager pair.");
     return;
   }
   for (const d of config.devices) {

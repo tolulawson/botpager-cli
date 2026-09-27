@@ -3,7 +3,7 @@ import { resolveDevice } from "../resolve";
 
 export function defaultCommand(ref: string | undefined): void {
   if (!ref) {
-    console.error("Usage: pagerbot default <ref>");
+    console.error("Usage: botpager default <ref>");
     process.exitCode = 1;
     return;
   }

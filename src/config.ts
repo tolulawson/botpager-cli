@@ -17,10 +17,10 @@ export interface Config {
   devices: LinkedDevice[];
 }
 
-const DEFAULT_API = "https://pagerbot.reostack.com";
+const DEFAULT_API = "https://botpager-api.reostack.com";
 
 export function configPath(): string {
-  return process.env.PAGERBOT_CONFIG || process.env.BOTPAGER_CONFIG || join(homedir(), ".botpager", "config.json");
+  return process.env.BOTPAGER_CONFIG || join(homedir(), ".botpager", "config.json");
 }
 
 function isMissingFile(err: unknown): boolean {
@@ -50,7 +50,13 @@ export function saveConfig(config: Config): void {
 }
 
 export function apiUrl(config: Config): string {
-  return (process.env.PAGERBOT_API_URL || process.env.BOTPAGER_API_URL || config.apiUrl || DEFAULT_API).replace(/\/+$/, "");
+  const selected = (process.env.BOTPAGER_API_URL || config.apiUrl || DEFAULT_API).replace(/\/+$/, "");
+  // A profile owns both the server address and its credentials. An environment
+  // override must never redirect an existing pairing to a different server.
+  if (config.devices.length && new URL(selected).origin !== new URL(config.apiUrl).origin) {
+    throw new Error("This configuration is paired with another API server. Set BOTPAGER_CONFIG to a separate file and run botpager pair for the new server.");
+  }
+  return selected;
 }
 
 export function upsertDevice(config: Config, device: LinkedDevice): Config {

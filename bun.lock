@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@reostack/pagerbot",
+      "name": "@reostack/botpager",
       "dependencies": {
         "qrcode-terminal": "^0.12.0",
       },

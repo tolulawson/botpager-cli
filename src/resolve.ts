@@ -9,7 +9,7 @@ export class ResolveError extends Error {
         ? `No device matches "${ref}". Valid refs:\n${devices
             .map((d) => `  ${d.alias}  ${d.deviceId}`)
             .join("\n")}`
-        : `No device matches "${ref}". Pair a phone first with pagerbot pair.`,
+        : `No device matches "${ref}". Pair a phone first with botpager pair.`,
     );
     this.refs = refs;
   }
@@ -21,7 +21,7 @@ export function resolveDevice(config: Config, ref?: string): LinkedDevice {
     throw new ResolveError(ref ?? "(none)", devices);
   }
 
-  const target = ref || process.env.PAGERBOT_DEVICE || process.env.BOTPAGER_DEVICE || config.defaultDevice;
+  const target = ref || process.env.BOTPAGER_DEVICE || config.defaultDevice;
   if (!target) {
     throw new ResolveError("(none)", devices);
   }

@@ -5,9 +5,9 @@ import cliPackage from '../package.json';
 
 // A rerun may follow a successful npm publish but failed GitHub release creation.
 // Resume only when the existing registry artifact matches these exact bytes.
-const tarball = `./artifacts/reostack-pagerbot-${cliPackage.version}.tgz`;
+const tarball = `./artifacts/reostack-botpager-${cliPackage.version}.tgz`;
 const integrity = `sha512-${createHash('sha512').update(readFileSync(tarball)).digest('base64')}`;
-const url = `https://registry.npmjs.org/@reostack%2fpagerbot/${cliPackage.version}`;
+const url = `https://registry.npmjs.org/@reostack%2fbotpager/${cliPackage.version}`;
 const response = await fetch(url, { signal: AbortSignal.timeout(20_000) });
 if (response.ok) {
   const published = await response.json() as { dist: { integrity: string } };

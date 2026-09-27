@@ -10,25 +10,24 @@ import { unlinkCommand } from "./commands/unlink";
 import { ApiRequestError } from "./api";
 import { ResolveError } from "./resolve";
 
-const HELP = `pagerbot — page a paired phone
+const HELP = `botpager — page a paired phone
 
 Usage:
-  pagerbot pair [--name <cliName>]
-  pagerbot send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [--priority high|normal] [--json] [message|-]
-  pagerbot devices [--json]
-  pagerbot default <ref>
-  pagerbot rename <old> <new>
-  pagerbot unlink <ref>
-  pagerbot status [--json]
+  botpager pair [--name <cliName>]
+  botpager send [-d <ref>] [--title <title>] [--kind success|error|info|warning|other] [--project <name>] [--priority high|normal] [--json] [message|-]
+  botpager devices [--json]
+  botpager default <ref>
+  botpager rename <old> <new>
+  botpager unlink <ref>
+  botpager status [--json]
 
 Refs resolve by exact device id, then exact name. No fuzzy match.
 
 Env:
-  PAGERBOT_API_URL   API origin (default from ~/.botpager/config.json)
-  PAGERBOT_DEVICE    Default device ref (overrides config default)
-  PAGERBOT_CONFIG    Config path (default ~/.botpager/config.json)
+  BOTPAGER_API_URL   API origin (default from ~/.botpager/config.json)
+  BOTPAGER_DEVICE    Default device ref (overrides config default)
+  BOTPAGER_CONFIG    Config path (default ~/.botpager/config.json)
 
-Existing BOTPAGER_* variables and ~/.botpager/config.json remain supported.
 `;
 
 async function main(): Promise<void> {
@@ -41,7 +40,6 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "pair":
-    case "link":
       await linkCommand(flagString(flags, "name"));
       return;
     case "send":

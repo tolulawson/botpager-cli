@@ -18,7 +18,7 @@ describe("loadConfig", () => {
   test("missing file is empty, not an error", () => {
     process.env.BOTPAGER_CONFIG = join(mkdtempSync(join(tmpdir(), "bp-")), "missing.json");
     expect(loadConfig().devices).toEqual([]);
-    expect(loadConfig().apiUrl).toBe("https://pagerbot.reostack.com");
+    expect(loadConfig().apiUrl).toBe("https://botpager-api.reostack.com");
   });
 
   test("corrupt JSON is not treated as empty", () => {

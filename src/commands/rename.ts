@@ -4,7 +4,7 @@ import { resolveDevice } from "../resolve";
 
 export async function renameCommand(oldRef: string | undefined, nextName: string | undefined): Promise<void> {
   if (!oldRef || !nextName) {
-    console.error("Usage: pagerbot rename <old> <new>");
+    console.error("Usage: botpager rename <old> <new>");
     process.exitCode = 1;
     return;
   }
