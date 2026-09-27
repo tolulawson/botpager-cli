@@ -19,7 +19,9 @@ export async function upgradeCommand(check: boolean, json: boolean) {
   const executable = realpathSync(process.execPath);
   const standalone = /^botpager(?:\.exe)?$/.test(basename(executable));
   let prefix = '', global = false;
-  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  // Windows .cmd shims cannot be executed directly without a shell. Invoke npm's JS entry instead.
+  const npm = process.platform === 'win32' ? process.execPath : 'npm';
+  const npmArgs = process.platform === 'win32' ? [join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')] : [];
   if (!standalone) {
     const entry = realpathSync(process.argv[1]!);
     const root = dirname(dirname(entry));
@@ -27,7 +29,7 @@ export async function upgradeCommand(check: boolean, json: boolean) {
       throw Error('Source or unknown installation. Install a published BotPager package or standalone binary before upgrading.');
     }
     prefix = dirname(dirname(dirname(root)));
-    const globalRoot = execFileSync(npm,['root','--global'],{encoding:'utf8'}).trim();
+    const globalRoot = execFileSync(npm,[...npmArgs,'root','--global'],{encoding:'utf8'}).trim();
     global = realpathSync(dirname(dirname(root))) === resolve(globalRoot);
   }
   const metadata = JSON.parse((await download(standalone
@@ -42,8 +44,8 @@ export async function upgradeCommand(check: boolean, json: boolean) {
     return;
   }
   if (!standalone) {
-    execFileSync(npm,['install',...(global?['--global']:['--prefix',prefix]),`@reostack/botpager@${version}`,'--registry=https://registry.npmjs.org'],{stdio:json?'pipe':'inherit'});
-    const installed=JSON.parse(readFileSync(join(global?execFileSync(npm,['root','--global'],{encoding:'utf8'}).trim():join(prefix,'node_modules'),'@reostack','botpager','package.json'),'utf8'));
+    execFileSync(npm,[...npmArgs,'install',...(global?['--global']:['--prefix',prefix]),`@reostack/botpager@${version}`,'--registry=https://registry.npmjs.org'],{stdio:json?'pipe':'inherit'});
+    const installed=JSON.parse(readFileSync(join(global?execFileSync(npm,[...npmArgs,'root','--global'],{encoding:'utf8'}).trim():join(prefix,'node_modules'),'@reostack','botpager','package.json'),'utf8'));
     if(installed.version!==version) throw Error('Installed npm version does not match requested release');
   } else {
     let platform = `${process.platform}-${process.arch}`;
