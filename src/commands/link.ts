@@ -75,7 +75,7 @@ export async function linkCommand(name?: string, json = false): Promise<void> {
     if (session.status === 'linked' && session.deviceId && session.deviceName) {
       const existing = loadConfig();
       if (session.token) {
-        saveConfig(upsertDevice({...existing,apiUrl:origin},{deviceId:session.deviceId,token:session.token,deviceName:session.deviceName,cliName:session.cliName ?? name ?? defaultCliName(),alias:session.deviceName,linkedAt:new Date().toISOString()}));
+        saveConfig(upsertDevice({...existing,apiUrl:origin},{deviceId:session.deviceId,token:session.token,deviceName:session.deviceName,deviceModel:session.deviceModel,cliName:session.cliName ?? name ?? defaultCliName(),alias:session.deviceName,linkedAt:new Date().toISOString()}));
       } else if (!existing.devices.some(device => device.deviceId === session.deviceId)) {
         throw Error('Pairing credentials are unavailable. Unlink this computer in the app, then pair again.');
       }

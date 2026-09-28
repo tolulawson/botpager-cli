@@ -64,6 +64,7 @@ export interface PairSession {
   deviceId?: string;
   token?: string;
   deviceName?: string;
+  deviceModel?: string;
   cliName?: string;
   expiresAt?: string;
 }

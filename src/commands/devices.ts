@@ -10,6 +10,7 @@ export function devicesCommand(asJson: boolean): void {
           devices: config.devices.map((d) => ({
             name: d.alias,
             deviceName: d.deviceName,
+            deviceModel: d.deviceModel,
             deviceId: d.deviceId,
             cliName: d.cliName,
             linkedAt: d.linkedAt,
@@ -27,6 +28,6 @@ export function devicesCommand(asJson: boolean): void {
   }
   for (const d of config.devices) {
     const mark = d.deviceId === config.defaultDevice ? "*" : " ";
-    console.log(`${mark} ${d.alias}  ${d.deviceId}`);
+    console.log(`${mark} ${d.alias}${d.deviceModel && d.deviceModel !== d.alias ? ` (${d.deviceModel})` : ""}  ${d.deviceId}`);
   }
 }
