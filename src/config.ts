@@ -6,6 +6,8 @@ export interface LinkedDevice {
   deviceId: string;
   token: string;
   deviceName: string;
+  deviceModel?: string;
+  platform?: string;
   cliName: string;
   alias: string;
   linkedAt: string;
