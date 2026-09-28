@@ -3,7 +3,7 @@ import qrcode from 'qrcode-terminal';
 import { readFileSync, writeFileSync, mkdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { ApiRequestError, api, apiResponse, type PairSession, type PairStart } from '../api';
-import { defaultCliName } from '../cli-name';
+import { defaultCliName, computerModel } from '../cli-name';
 import { apiUrl, configPath, loadConfig, saveConfig, upsertDevice, type Config } from '../config';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -48,7 +48,7 @@ export async function linkCommand(name?: string, json = false): Promise<void> {
     if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
   }
   if (!started) {
-    started = await api<PairStart>(config,'/v1/pair/start',{method:'POST',body:JSON.stringify({computerId:computerIdentity(),cliName:name?.trim() || defaultCliName(),cliPlatform:process.platform})});
+    started = await api<PairStart>(config,'/v1/pair/start',{method:'POST',body:JSON.stringify({computerId:computerIdentity(),cliName:name?.trim() || defaultCliName(),cliPlatform:process.platform,cliModel:computerModel()})});
     mkdirSync(dirname(pendingPath),{recursive:true,mode:0o700});
     const temp = `${pendingPath}.${process.pid}.tmp`;
     writeFileSync(temp,JSON.stringify({origin,started}),{mode:0o600});
@@ -75,7 +75,7 @@ export async function linkCommand(name?: string, json = false): Promise<void> {
     if (session.status === 'linked' && session.deviceId && session.deviceName) {
       const existing = loadConfig();
       if (session.token) {
-        saveConfig(upsertDevice({...existing,apiUrl:origin},{deviceId:session.deviceId,token:session.token,deviceName:session.deviceName,deviceModel:session.deviceModel,cliName:session.cliName ?? name ?? defaultCliName(),alias:session.deviceName,linkedAt:new Date().toISOString()}));
+        saveConfig(upsertDevice({...existing,apiUrl:origin},{deviceId:session.deviceId,token:session.token,deviceName:session.deviceName,deviceModel:session.deviceModel,platform:session.platform,cliName:session.cliName ?? name ?? defaultCliName(),alias:session.deviceName,linkedAt:new Date().toISOString()}));
       } else if (!existing.devices.some(device => device.deviceId === session.deviceId)) {
         throw Error('Pairing credentials are unavailable. Unlink this computer in the app, then pair again.');
       }
