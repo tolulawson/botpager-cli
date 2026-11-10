@@ -70,4 +70,4 @@ The API repository must deploy the reviewed `install.sh` and `install.ps1` copie
 
 ## Monorepo source
 
-Develop and review changes in `botpager/apps/cli`. Before running the existing release workflow, export the reviewed subtree and merge its release-host PR as described in [the monorepo guide](../../docs/monorepo.md). The workflow templates in this directory are intentionally activated only by that export. Do not develop independently in the release host. The nested lockfile supports the exported repository; update it alongside the root lockfile when CLI dependencies change.
+Develop and review changes in `botpager/apps/cli`. Before running the existing release workflow, export the reviewed subtree and merge its release-host PR as described in [the internal monorepo guide (maintainer access required)](https://github.com/tolulawson/botpager/blob/main/docs/monorepo.md). The workflow templates in this directory are intentionally activated only by that export. Do not develop independently in the release host. The nested lockfile supports the exported repository; update it alongside the root lockfile when CLI dependencies change.
