@@ -30,11 +30,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tolulawson/botpager-cli.git"
+    "url": "git+https://github.com/tolulawson/botpager.git",
+    "directory": "apps/cli"
   },
-  "homepage": "https://github.com/tolulawson/botpager-cli#readme",
+  "homepage": "https://github.com/tolulawson/botpager/tree/main/apps/cli#readme",
   "bugs": {
-    "url": "https://github.com/tolulawson/botpager-cli/issues"
+    "url": "https://github.com/tolulawson/botpager/issues"
   },
   "publishConfig": {
     "access": "public",
