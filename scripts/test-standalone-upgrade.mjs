@@ -1,14 +1,15 @@
 // Exercises the real published GitHub release in an isolated installation.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, writeFileSync, symlinkSync, rmSync, mkdirSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { linkFixtureDependencies } from './fixture-dependencies.mjs';
 const root=mkdtempSync(join(tmpdir(),'botpager-upgrade-e2e-'));
 try {
  cpSync('src',join(root,'src'),{recursive:true});
  const pkg=JSON.parse(readFileSync('package.json','utf8'));pkg.version='0.0.0';writeFileSync(join(root,'package.json'),JSON.stringify(pkg));
- symlinkSync(resolve('node_modules'),join(root,'node_modules'),process.platform==='win32'?'junction':'dir');
+ linkFixtureDependencies(root);
  const binary=join(root,process.platform==='win32'?'botpager.exe':'botpager');
  execFileSync(process.env.BUN_BINARY || 'bun',['build','--compile',join(root,'src/index.ts'),'--outfile',binary],{stdio:'pipe'});
  const config=join(root,'config.json');writeFileSync(config,'{"devices":[]}');

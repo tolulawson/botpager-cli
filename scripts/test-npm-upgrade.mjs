@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, writeFileSync, symlinkSync, rmSync, mkdirSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { linkFixtureDependencies } from './fixture-dependencies.mjs';
 const root=mkdtempSync(join(tmpdir(),'botpager-npm-upgrade-'));
 try {
  const source=join(root,'source');mkdirSync(source);cpSync('src',join(source,'src'),{recursive:true});
  const pkg=JSON.parse(readFileSync('package.json','utf8'));pkg.version='0.0.0';writeFileSync(join(source,'package.json'),JSON.stringify(pkg));
- symlinkSync(resolve('node_modules'),join(source,'node_modules'),process.platform==='win32'?'junction':'dir');
+ linkFixtureDependencies(source);
  const prefix=join(root,'installation');const target=join(prefix,'node_modules','@reostack','botpager');mkdirSync(join(target,'dist'),{recursive:true});
  writeFileSync(join(prefix,'package.json'),'{"private":true}');writeFileSync(join(target,'package.json'),JSON.stringify({...pkg,scripts:{}}));
  const entry=join(target,'dist','index.js');

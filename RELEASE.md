@@ -67,3 +67,7 @@ node scripts/e2e-api.mjs /absolute/path/to/botpager https://botpager-api.reostac
 For localhost Worker verification, substitute its origin. No customer credentials or push tokens are used. Run only against an authorized backend; the check creates and revokes test pairings. Server tombstones follow its retention policy.
 
 The API repository must deploy the reviewed `install.sh` and `install.ps1` copies before app users see the new installer behavior. Binary artifacts remain hosted at `https://github.com/tolulawson/botpager-cli/releases/download/vVERSION/`. The installer pins all downloads to one resolved stable release.
+
+## Monorepo source
+
+Develop and review changes in `botpager/apps/cli`. Before running the existing release workflow, export the reviewed subtree and merge its release-host PR as described in [the internal monorepo guide (maintainer access required)](https://github.com/tolulawson/botpager/blob/main/docs/monorepo.md). The workflow templates in this directory are intentionally activated only by that export. Do not develop independently in the release host. The nested lockfile supports the exported repository; update it alongside the root lockfile when CLI dependencies change.

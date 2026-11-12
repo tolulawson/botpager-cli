@@ -106,8 +106,16 @@ Uninstalling the executable does not revoke pairings. Run `botpager unlink <ref>
 
 ## Development
 
-This public repository owns the CLI, npm package, installer, and CLI release workflow.
-The API and Expo mobile app are maintained separately. Neither source tree is required to build this package.
+Maintainers develop the CLI alongside the API and Expo app in the private BotPager monorepo. From the monorepo root:
+
+```sh
+bun install --frozen-lockfile
+bun run cli:check
+bun run cli:build
+bun run cli --help
+```
+
+The public release repository remains independently buildable. No mobile or API source is needed:
 
 ```sh
 git clone https://github.com/tolulawson/botpager-cli.git
