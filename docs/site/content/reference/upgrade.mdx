@@ -1,0 +1,32 @@
+---
+title: "botpager upgrade"
+---
+
+# botpager upgrade
+
+## Synopsis
+
+```text
+botpager upgrade [--check] [--json]
+```
+
+## Arguments and options
+
+| Argument / option | Meaning |
+| --- | --- |
+| `--check` | Reports availability without changing the executable. |
+| `--json` | Machine-readable upgrade result. |
+
+## Behavior
+
+npm installations select the version tagged `latest` in the npm registry and update through npm. Standalone installations select the latest stable GitHub release and verify SHA-256 and executable version before replacement. Configuration and pairings are retained. Source checkouts require a Git update. Local npm policies remain in effect.
+
+## Example
+
+```sh
+botpager upgrade --check --json
+```
+
+## Related
+
+[Task guide](/how-to/upgrade/) · [Output and errors](/reference/output/)

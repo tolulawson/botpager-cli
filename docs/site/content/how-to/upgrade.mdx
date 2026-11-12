@@ -1,0 +1,41 @@
+---
+title: "How to upgrade or remove BotPager"
+---
+
+# How to upgrade or remove BotPager
+
+This guide shows you how to update the CLI or remove it and revoke its pairings.
+
+## Upgrade
+
+Check without installing:
+
+```sh
+botpager upgrade --check --json
+```
+
+Install the latest stable version:
+
+```sh
+botpager upgrade
+botpager --version
+```
+
+If your CLI predates `upgrade`, rerun the [original installer](/how-to/install/). Update source checkouts through Git instead. If npm blocks the release because of a local policy, resolve that policy through your usual process; repeated upgrades do not bypass it.
+
+## Remove
+
+List pairings, then revoke each pairing you want to remove:
+
+```sh
+botpager devices
+botpager unlink "Work phone"
+```
+
+For npm installations:
+
+```sh
+npm uninstall --global @reostack/botpager
+```
+
+For standalone installations, remove the executable from the directory printed by the installer. Keep `~/.botpager/` if you need the retained configuration or computer identity. Uninstalling an executable alone does not revoke its credentials. See [local files](/reference/configuration/).

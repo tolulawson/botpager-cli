@@ -1,0 +1,31 @@
+---
+title: "botpager status"
+---
+
+# botpager status
+
+## Synopsis
+
+```text
+botpager status [--json]
+```
+
+## Arguments and options
+
+| Argument / option | Meaning |
+| --- | --- |
+| `--json` | Object containing `apiUrl`, `apiOk`, `devices` count and `default` name/ID or null. |
+
+## Behavior
+
+Checks `/healthz` and reports local pairing count. An unreachable API is represented by `apiOk: false`; that condition alone does not set a failing exit code. Does not prove push delivery or validate every saved pairing.
+
+## Example
+
+```sh
+botpager status --json
+```
+
+## Related
+
+[Task guide](/how-to/troubleshoot/) · [Output and errors](/reference/output/)

@@ -1,0 +1,32 @@
+---
+title: "How to use separate server profiles"
+---
+
+# How to use separate server profiles
+
+This guide shows you how to use a second API server without redirecting existing pairing credentials.
+
+In a POSIX shell, select a new profile before pairing:
+
+```sh
+export BOTPAGER_CONFIG="$HOME/.botpager/local.json"
+export BOTPAGER_API_URL="http://127.0.0.1:8787"
+botpager pair --name "Local development"
+```
+
+Use the phone app configured for the same backend. A physical phone cannot reach a computer through the phone’s own `localhost`; configure a mutually reachable backend address for device testing.
+
+Send a test message:
+
+```sh
+botpager send "Testing the separate profile"
+```
+
+Return to your default profile:
+
+```sh
+unset BOTPAGER_CONFIG BOTPAGER_API_URL BOTPAGER_DEVICE
+botpager status
+```
+
+Each profile retains its own destinations and default. Keep the shared computer identity intact. See [About pairing and credentials](/explanation/pairing/).

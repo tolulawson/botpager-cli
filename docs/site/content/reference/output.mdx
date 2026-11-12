@@ -1,0 +1,35 @@
+---
+title: "Output and errors"
+---
+
+# Output and errors
+
+## Exit status
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Command completed. `status` can return 0 with `apiOk: false`. |
+| `1` | Command, argument, configuration, network, or server failure. |
+| `78` | API requires an upgraded client, reported as `UPGRADE_REQUIRED`. |
+
+## JSON
+
+`pair --json` emits newline-delimited events. `send`, `devices`, `status`, and `upgrade` support JSON success output. Other commands do not acquire a JSON success format merely by receiving `--json`.
+
+Thrown failures with `--json` produce an `error` object on stderr. General failures have `code` and `message`; upgrade-required errors also contain compatibility requirements, `currentVersion`, `upgradeCommand`, and `retryOriginalCommand: false`. Some missing-argument paths print usage text and exit 1 even with `--json`.
+
+## Send results
+
+| Delivery | Meaning |
+| --- | --- |
+| `stored` | Message is stored for foreground fetch. |
+| `pushed` | Message is stored and push was sent. |
+| `duplicate` | Server recognizes the message ID as already stored. |
+
+Success is not a phone display, read, or push-delivery receipt. The CLI generates a new message ID for each `send` invocation, so manually rerunning a send can create another message.
+
+## Common errors
+
+`UPGRADE_REQUIRED` indicates client incompatibility. `ALREADY_PAIRED` indicates the same computer/phone identity pair already exists. Destination selection errors use exact matching. Other thrown failures use their API error code when available, or `COMMAND_FAILED`.
+
+[Recover from errors](/how-to/troubleshoot/) · [About delivery](/explanation/delivery/)

@@ -1,0 +1,4 @@
+html { --nextra-primary-hue: 215deg; --nextra-primary-saturation: 85%; }
+.docs-label { font-weight: 450; opacity: .65; margin-left: .5rem; }
+article h1 { letter-spacing: -.035em; }
+article p, article li { line-height: 1.8; }

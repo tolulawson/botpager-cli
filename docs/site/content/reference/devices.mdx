@@ -1,0 +1,31 @@
+---
+title: "botpager devices"
+---
+
+# botpager devices
+
+## Synopsis
+
+```text
+botpager devices [--json]
+```
+
+## Arguments and options
+
+| Argument / option | Meaning |
+| --- | --- |
+| `--json` | Object containing `defaultDevice` when set and a `devices` array. Credentials are excluded. |
+
+## Behavior
+
+Lists locally saved pairings, not a server inventory. Human output marks the default with `*` and includes device model and OS when available.
+
+## Example
+
+```sh
+botpager devices --json
+```
+
+## Related
+
+[Task guide](/how-to/choose-phone/) · [Output and errors](/reference/output/)

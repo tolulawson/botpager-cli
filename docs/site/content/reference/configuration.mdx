@@ -1,0 +1,29 @@
+---
+title: "Configuration"
+---
+
+# Configuration
+
+## Environment variables
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `BOTPAGER_CONFIG` | `~/.botpager/config.json` | Selected profile file. |
+| `BOTPAGER_API_URL` | Saved origin; otherwise `https://botpager-api.reostack.com` | API origin. An override to another origin is rejected when the profile has pairings. |
+| `BOTPAGER_DEVICE` | Saved default device ID | Destination override for commands that resolve the default. |
+
+## Destination resolution
+
+An explicit command reference takes precedence over `BOTPAGER_DEVICE`, which takes precedence over the profile default. Resolution checks an exact device ID, then a unique exact alias, then a unique exact device name. Matching is case-sensitive. There is no fuzzy match. Ambiguous names fail.
+
+## Local files
+
+| File | Contents |
+| --- | --- |
+| `~/.botpager/config.json` | API origin, default destination, and saved pairing records including bearer tokens. |
+| `~/.botpager/computer-id` | Persistent computer identity shared across profiles for this OS user. |
+| Selected profile path plus `.pairing` | Unfinished session, including its session secret. |
+
+Configuration writes use a temporary file and atomic rename. Newly created configuration files use mode `0600` and directories use `0700` on systems that honor these modes. These files must not be committed, shared, or attached to support requests.
+
+[Separate server profiles](/how-to/profiles/) · [About credentials](/explanation/pairing/)

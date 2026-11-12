@@ -1,0 +1,66 @@
+---
+title: "Send your first message"
+---
+
+# Send your first message
+
+We’ll connect a Mac to a phone and send a message named **Hello from my terminal**.
+
+Before starting, have BotPager installed on your phone and open a macOS terminal. This exercise starts with a fresh default CLI profile containing no saved destinations, no `BOTPAGER_CONFIG`, `BOTPAGER_API_URL`, or `BOTPAGER_DEVICE` overrides, and a computer that is not yet paired with that phone.
+
+## 1. Install BotPager
+
+Run:
+
+```sh
+curl -fsSL https://botpager.reostack.com/cli/install.sh | bash
+```
+
+The installer prints its destination. Follow its printed PATH instruction, then run:
+
+```sh
+botpager --version
+```
+
+You should see a version number. If the command is not found, the printed install directory is not on your PATH yet.
+
+## 2. Pair the phone
+
+Run:
+
+```sh
+botpager pair --name "Tutorial Mac"
+```
+
+You should see a QR code and an eight-character pairing code. In the phone app, choose **Pair a computer**, scan the QR code, and confirm **Tutorial Mac**. Keep the terminal open until it confirms the link.
+
+Now run:
+
+```sh
+botpager devices
+```
+
+Notice the phone’s name and the `*` beside the default destination.
+
+## 3. Send a message
+
+Run:
+
+```sh
+botpager send --title "Hello from my terminal" --kind success "The first message is ready."
+```
+
+The terminal should print `Saved for` followed by your phone’s name. Open the app’s Inbox and find **Hello from my terminal**. Notifications are optional for this exercise; opening Inbox fetches stored messages.
+
+## 4. Send terminal output
+
+Run:
+
+```sh
+printf 'The second message came from a pipe.
+' | botpager send --title "Terminal output" -
+```
+
+Open **Terminal output** in the Inbox. Its body should contain the line from `printf`.
+
+You have built a working terminal-to-phone message path. Next, [notify from a script or agent](/how-to/automate/) or look up the [send command](/reference/send/).

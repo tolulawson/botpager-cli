@@ -1,0 +1,17 @@
+---
+title: "About pairing and credentials"
+---
+
+# About pairing and credentials
+
+BotPager connects a computer to a phone without creating an account. The pairing code is a short-lived meeting point: the phone confirms the computer, and the CLI receives credentials for that pairing.
+
+The CLI saves credentials before acknowledging their delivery. This ordering lets an interrupted connection resume without discarding the only copy of the credentials. The saved unfinished session belongs to one API origin, so switching a server midway cannot silently reuse it elsewhere.
+
+A persistent computer ID identifies the installation separately from the computer’s editable name. It is shared across profiles. Pairing uniqueness applies to a computer/phone identity pair: changing the name does not create a different computer, while another phone can be paired independently.
+
+A profile binds an API origin to its destinations and credentials. Rejecting cross-origin overrides on a paired profile helps prevent bearer credentials from reaching the wrong server. Separate profiles let development and production remain distinct.
+
+The credential is stored on the computer because future sends must be authorized. Public repositories, logs, and shared support bundles are unsuitable places for it. Removing an executable does not revoke an already issued credential; unlinking revokes the pairing.
+
+[Configuration reference](/reference/configuration/) · [Separate server profiles](/how-to/profiles/) · [Remove a pairing](/how-to/choose-phone/)
