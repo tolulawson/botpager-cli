@@ -1,0 +1,30 @@
+---
+title: "Installation requirements"
+---
+
+# Installation requirements
+
+## Distribution
+
+Package: `@reostack/botpager`. Executable: `botpager`. Stable binary archives, checksums, and source manifests are hosted in [GitHub Releases](https://github.com/tolulawson/botpager-cli/releases).
+
+## Platforms
+
+| Distribution | Requirements |
+| --- | --- |
+| npm | Node.js 20 or newer and npm. |
+| macOS standalone | ARM64 or x64. |
+| Linux standalone | ARM64 or x64, glibc or musl. Alpine requires `libstdc++`. |
+| Windows standalone | x64 and PowerShell. |
+| Source build | Bun 1.4.2. |
+
+Standalone installers do not require Node.js or Bun. Unix installers require curl, tar/gzip, and a SHA-256 utility. Installers do not elevate privileges or edit shell profiles. Archives are checked against release SHA-256 checksums.
+
+## Installer variables
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `BOTPAGER_VERSION` | Latest stable GitHub release | Exact stable version to install. |
+| `BOTPAGER_INSTALL_DIR` | User-owned install directory selected by the installer | Executable destination. The printed path is authoritative. |
+
+[Install BotPager](/how-to/install/) · [Upgrade reference](/reference/upgrade/)

@@ -37,6 +37,10 @@ botpager send --title "Task complete" --kind success
 
 The default API is `https://botpager-api.reostack.com`. The server saves messages even if notifications are disabled; open Inbox to fetch them. A successful send is not a physical-device delivery receipt.
 
+## Documentation
+
+The Nextra documentation site lives in [docs/site](docs/site/README.md), with tutorials, task guides, command reference, and explanations.
+
 ## Commands
 
 ```text

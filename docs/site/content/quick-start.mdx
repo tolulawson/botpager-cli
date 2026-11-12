@@ -1,0 +1,58 @@
+---
+title: "Quick start"
+---
+
+import { Tabs } from 'nextra/components'
+
+# Quick start
+
+Install the CLI, pair your phone, and send an update. Have the [BotPager app](https://botpager.reostack.com/) installed on your phone before pairing.
+
+## 1. Install
+
+<Tabs items={['macOS / Linux', 'Windows', 'npm']}>
+<Tabs.Tab>
+```sh
+curl -fsSL https://botpager.reostack.com/cli/install.sh | bash
+```
+</Tabs.Tab>
+<Tabs.Tab>
+```powershell
+irm https://botpager.reostack.com/cli/install.ps1 | iex
+```
+</Tabs.Tab>
+<Tabs.Tab>
+Requires Node.js 20 or newer.
+
+```sh
+npm install --global @reostack/botpager
+```
+</Tabs.Tab>
+</Tabs>
+
+Follow any printed PATH instructions, then check:
+
+```sh
+botpager --version
+```
+
+## 2. Pair
+
+```sh
+botpager pair
+```
+
+In the app, choose **Pair a computer**, scan the QR code or enter the pairing code, and confirm the computer. Keep the terminal open until pairing finishes. If this computer and phone are already paired, skip this step.
+
+## 3. Send
+
+```sh
+botpager devices
+botpager send -d "Your phone name" --title "Hello from BotPager" "Your terminal can reach you now."
+```
+
+Replace `Your phone name` with the exact name shown by `botpager devices`. Open Inbox on that phone to see the message. A saved message is available there even if notifications are disabled.
+
+## Next
+
+[Notify from a script or coding agent](/how-to/automate/) · [Command reference](/reference/) · [Step-by-step tutorial](/tutorials/first-message/)

@@ -1,0 +1,51 @@
+---
+title: "How to install BotPager"
+---
+
+# How to install BotPager
+
+This guide shows you how to install a standalone executable or the npm package.
+
+## macOS and Linux
+
+```sh
+curl -fsSL https://botpager.reostack.com/cli/install.sh | bash
+```
+
+Follow the printed PATH instructions. The installer does not edit shell profiles.
+
+For a fixed release or custom destination, download the installer first, then supply its variables to Bash:
+
+```sh
+curl -fsSL https://botpager.reostack.com/cli/install.sh -o /tmp/botpager-install.sh
+BOTPAGER_VERSION=0.3.1 BOTPAGER_INSTALL_DIR="$HOME/.local/bin" bash /tmp/botpager-install.sh
+```
+
+## Windows x64
+
+Run in PowerShell:
+
+```powershell
+irm https://botpager.reostack.com/cli/install.ps1 | iex
+```
+
+Follow the printed PATH instructions. For custom values, set `$env:BOTPAGER_VERSION` and `$env:BOTPAGER_INSTALL_DIR` before running the installer.
+
+## npm
+
+With Node.js 20 or newer installed:
+
+```sh
+npm install --global @reostack/botpager
+```
+
+If npm rejects a recent release because of a publication-age policy, wait until that policy permits the release or use the standalone installation with your organization’s approval. BotPager does not change npm’s policies.
+
+## Verify the executable
+
+```sh
+botpager --version
+botpager --help
+```
+
+Continue with [the first-message tutorial](/tutorials/first-message/). See [platform requirements](/reference/installation/) for supported builds and installer variables.

@@ -1,0 +1,37 @@
+---
+title: "How to recover from CLI errors"
+---
+
+# How to recover from CLI errors
+
+This guide shows you how to recover from common pairing, selection, and delivery failures.
+
+## Command not found
+
+Find the install directory printed by the installer and add it to your PATH. Reopen the terminal and run `botpager --version`. For npm, check that its global executable directory is on PATH.
+
+## Pairing was interrupted
+
+Run `botpager pair` again with the same `BOTPAGER_CONFIG` and API origin. The CLI resumes a valid saved session. If the code expired, run it again to obtain a new code. Do not delete the computer identity to work around a duplicate pairing.
+
+## ALREADY_PAIRED
+
+Find the existing computer in the phone app. To reconnect it, unlink the existing pairing first, then run `botpager pair`. Pairing the same computer with a different phone is allowed.
+
+## No device matches
+
+Run `botpager devices` and use an exact ID or name. Check `BOTPAGER_DEVICE` if an unexpected destination is selected. Use an ID when names are ambiguous.
+
+## The message saved but no alert appeared
+
+Open Inbox on the phone. Check the phone’s notification permission and network connection. A saved message and a push alert are separate outcomes; see [About message delivery](/explanation/delivery/).
+
+## UPGRADE_REQUIRED
+
+Read the required version in the error. Run `botpager upgrade --check --json`, then upgrade when authorized. Retry the original command yourself after verifying the installed version. If no suitable release exists yet, keep the error details for support rather than retrying the send automatically.
+
+## Another API server is selected
+
+Restore the original `BOTPAGER_API_URL`, or select a separate `BOTPAGER_CONFIG` before pairing with the other server. See [How to use separate server profiles](/how-to/profiles/).
+
+For support, include the CLI version and error code. Never attach configuration files or unfinished pairing files; they contain credentials.

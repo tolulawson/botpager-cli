@@ -1,0 +1,32 @@
+---
+title: "botpager pair"
+---
+
+# botpager pair
+
+## Synopsis
+
+```text
+botpager pair [--name <computer-name>] [--json]
+```
+
+## Arguments and options
+
+| Argument / option | Meaning |
+| --- | --- |
+| `--name` | Computer label; defaults to the detected computer name. |
+| `--json` | Newline-delimited `pairing` and `linked` events; no bearer credentials. |
+
+## Behavior
+
+Creates or resumes a saved pairing session. Credentials are saved before the CLI acknowledges delivery. The code and QR payload are visible in the pairing event. Duplicate computer/phone identity pairs are rejected.
+
+## Example
+
+```sh
+botpager pair --name "Build Mac"
+```
+
+## Related
+
+[Task guide](/tutorials/first-message/) · [Output and errors](/reference/output/)

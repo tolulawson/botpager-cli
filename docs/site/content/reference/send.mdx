@@ -1,0 +1,37 @@
+---
+title: "botpager send"
+---
+
+# botpager send
+
+## Synopsis
+
+```text
+botpager send [-d <ref>] [--title <title>] [--kind <kind>] [--project <name>] [--priority <priority>] [--json] [message|-]
+```
+
+## Arguments and options
+
+| Argument / option | Meaning |
+| --- | --- |
+| `-d` | Exact destination reference. Defaults to `BOTPAGER_DEVICE`, then the saved default. |
+| `--title` | Message title. A title-only message sends without reading stdin. |
+| `--kind` | `success`, `error`, `info`, `warning`, or `other`. Default: `info`. Unknown values fail. |
+| `--project` | Project label. |
+| `--priority` | `high` or `normal`. Only the exact value `high` selects high priority; other values use normal. |
+| `--json` | JSON API response on stdout. |
+| `message` | Positional body text; `-` reads stdin. `--` ends option parsing. |
+
+## Behavior
+
+A nonempty title or body is required. Without a title or positional message, non-interactive stdin is read automatically. There is no `--message` option. Successful output reports storage and push status, not phone receipt.
+
+## Example
+
+```sh
+botpager send --title "Build complete" --kind success --project api "All checks passed"
+```
+
+## Related
+
+[Task guide](/how-to/automate/) · [Output and errors](/reference/output/)

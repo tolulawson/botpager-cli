@@ -1,0 +1,15 @@
+---
+title: "About message delivery"
+---
+
+# About message delivery
+
+A BotPager message has two paths to the phone: stored inbox history and a push notification. Storage is useful even when notifications are denied, a push token is missing, or the phone is temporarily offline. Opening the app gives it another opportunity to fetch history.
+
+This separation is why a successful terminal command is not a delivery receipt. It can confirm that a message was saved, or that a push request was sent, without knowing whether the operating system displayed an alert or a person read it.
+
+The server keeps a rolling 30-day history. The phone can retain previously synced history locally after server retention expires or a computer is unlinked. That local history is not proof that the original server record or pairing is still active.
+
+Server message IDs support duplicate handling, but the CLI assigns a new ID to each invocation. Repeating a command after an uncertain result can therefore create another message. Automation needs to distinguish a command failure from an upgrade requirement and decide when a retry is appropriate.
+
+[Send reference](/reference/send/) · [Output and errors](/reference/output/) · [Recover from a missing alert](/how-to/troubleshoot/)

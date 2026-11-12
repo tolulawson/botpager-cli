@@ -1,0 +1,28 @@
+{
+  "name": "botpager-cli-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "postbuild": "pagefind --site out --output-path out/_pagefind",
+    "preview": "python3 -m http.server 52001 --bind 127.0.0.1 --directory out",
+    "deploy": "wrangler deploy",
+    "postinstall": "patch-package --error-on-fail"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "nextra": "4.6.1",
+    "nextra-theme-docs": "4.6.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "pagefind": "1.6.0",
+    "wrangler": "4.158.0",
+    "patch-package": "8.0.1"
+  },
+  "overrides": {
+    "zod": "4.6.7"
+  }
+}

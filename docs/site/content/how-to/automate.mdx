@@ -1,0 +1,54 @@
+---
+title: "How to notify from a script or coding agent"
+---
+
+# How to notify from a script or coding agent
+
+This guide shows you how to send a completion or failure message from an existing workflow. Start with a paired CLI profile and a working `botpager send` command.
+
+## Preserve a job’s exit status
+
+In a POSIX shell script, capture the status before sending a notification:
+
+```sh
+if npm test; then
+  job_status=0
+else
+  job_status=$?
+fi
+if [ "$job_status" -eq 0 ]; then
+  botpager send --title "Tests passed" --kind success --project my-app || true
+else
+  botpager send --title "Tests failed" --kind error --project my-app || true
+fi
+exit "$job_status"
+```
+
+The notification must not replace the original job result. Review where this message belongs before running it in a shared pipeline.
+
+## Include a log excerpt
+
+```sh
+tail -n 40 build.log | botpager send --title "Build output" --project my-app -
+```
+
+Use an explicit `-` to read stdin when a title is present. Remove credentials and private data from the excerpt before sending it.
+
+## Install the coding-agent skill
+
+With Node.js/npm available, run from your project:
+
+```sh
+npx skills add tolulawson/botpager-cli --skill botpager
+```
+
+Choose the agent when prompted. Ask it to notify you when a task completes or needs your attention. Installing the skill does not pair a phone or send a message.
+
+## Read machine output
+
+```sh
+botpager status --json
+botpager send --json --title "Ready for review" --kind info
+```
+
+Handle nonzero exit codes before parsing success output. For exit `78`, surface the upgrade requirement; upgrade only when authorized and deliberately retry the original command. See [output and errors](/reference/output/).

@@ -1,0 +1,55 @@
+name: Deploy CLI docs
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cli-docs-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: docs-production
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: docs/site
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: docs/site/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: python3 scripts/check-export.py
+      - name: Prepare public deployment manifest
+        run: node scripts/prepare-deployment.mjs
+      - name: Deploy static docs to the configured Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npm run deploy
+      - name: Verify live revision and assets
+        run: python3 scripts/verify-deployment.py
+      - name: Record immutable docs release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="docs-${GITHUB_SHA:0:12}-${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$tag" --jq .sha)" = "$GITHUB_SHA"
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --title "CLI docs ${GITHUB_SHA:0:12}" --notes "Verified deployment to https://docs.botpager.reostack.com/ from $GITHUB_SHA. Workflow: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --latest=false out/deployment.json
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docs-deployment-${{ github.sha }}
+          path: docs/site/out/deployment.json

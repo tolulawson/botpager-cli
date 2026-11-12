@@ -1,0 +1,39 @@
+---
+title: "How to choose a phone for messages"
+---
+
+# How to choose a phone for messages
+
+This guide shows you how to select, rename, or remove a paired destination.
+
+1. List saved destinations:
+
+   ```sh
+   botpager devices
+   ```
+
+2. Copy an exact phone name or device ID. Send to that destination:
+
+   ```sh
+   botpager send -d "Work phone" "Deployment finished"
+   ```
+
+3. To make it the default:
+
+   ```sh
+   botpager default "Work phone"
+   ```
+
+To rename the phone destination, use its current exact reference:
+
+```sh
+botpager rename "Work phone" "Office phone"
+```
+
+To revoke this computer’s pairing with that phone:
+
+```sh
+botpager unlink "Office phone"
+```
+
+If a name is ambiguous, use the device ID from `botpager devices`. For temporary shell-wide selection, set `BOTPAGER_DEVICE` to the exact reference, then unset it when finished. See [reference resolution](/reference/configuration/) for precedence.
