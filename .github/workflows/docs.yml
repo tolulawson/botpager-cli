@@ -23,6 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: python3 scripts/check-export.py
+      - run: node scripts/prepare-deployment.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: cli-docs-static
