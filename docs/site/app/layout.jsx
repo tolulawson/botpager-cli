@@ -5,6 +5,7 @@ import 'nextra-theme-docs/style.css'
 import './globals.css'
 
 export const metadata = {
+  metadataBase: new URL('https://docs.botpager.reostack.com'),
   title: {
     default: "BotPager CLI Docs",
     template: "%s - BotPager CLI Docs"

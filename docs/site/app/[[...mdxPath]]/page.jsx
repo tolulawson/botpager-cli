@@ -6,7 +6,8 @@ export const generateStaticParams = generateStaticParamsFor('mdxPath')
 export async function generateMetadata(props) {
   const params = await props.params
   const { metadata } = await importPage(params.mdxPath)
-  return metadata
+  const path = params.mdxPath?.length ? `/${params.mdxPath.join('/')}/` : '/'
+  return { ...metadata, alternates: { canonical: path } }
 }
 
 const Wrapper = getMDXComponents().wrapper

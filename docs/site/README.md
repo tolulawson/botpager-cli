@@ -1,5 +1,7 @@
 # CLI documentation site
 
+Public URL: https://docs.botpager.reostack.com/.
+
 Nextra 4 docs for the public BotPager CLI, organized with Diátaxis. Source is in `content/`; the existing CLI release-verification document is outside this app and stays intact.
 
 ## Local development and preview
@@ -31,7 +33,7 @@ Before first deployment, configure the `docs-production` GitHub environment:
 - Variable `CLOUDFLARE_ACCOUNT_ID`: the existing Reostack account ID.
 - Require the owner’s approval and restrict deployment to `main`.
 
-Credentials go in GitHub environment settings, never in this repository, build arguments, MDX, or `NEXT_PUBLIC_*` variables. The Wrangler configuration contains no account credentials. It initially uses the Worker’s workers.dev hostname. Attach the chosen custom domain only after the owner approves the preview and domain.
+Credentials go in GitHub environment settings, never in this repository, build arguments, MDX, or `NEXT_PUBLIC_*` variables. The Wrangler configuration contains no account credentials. The configured custom domain is `docs.botpager.reostack.com`, selected by the owner. Deployment attaches this hostname to the static Worker in the account supplied by `CLOUDFLARE_ACCOUNT_ID`. The existing Reostack account must own the `reostack.com` zone, and the token must have the route/domain permissions needed to attach it. The owner’s visual preview approval is still required before deployment.
 
 Local equivalent, using an already authorized environment in the intended account:
 
